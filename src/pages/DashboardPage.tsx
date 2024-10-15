@@ -1,11 +1,9 @@
+import { Box, Typography, Button } from '@mui/joy';
+import { Add } from '@mui/icons-material';
 import React from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-// import CreateCompanyModal from '../modals/CreateCompanyModal';
-// import OrderTable from '../OrderTable';
-// import OrderList from '../OrderList';
-import { Box, Typography, Button } from '@mui/joy';
-import { Add } from '@mui/icons-material';
+import OrderTable from '../components/company/OrderTable';
 
 export default function DashboardPage() {
     const [createModalOpen, setCreateModalOpen] = React.useState<boolean>(false);
@@ -59,8 +57,8 @@ export default function DashboardPage() {
                     </Button>
                     {/* <CreateCompanyModal open={createModalOpen} onClose={() => { setCreateModalOpen(false) }} /> */}
                 </Box>
-                {/* <OrderTable />
-                <OrderList /> */}
+                <OrderTable />
+                {/* <OrderList /> */}
 
             </Box>
         </Box>

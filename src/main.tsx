@@ -1,9 +1,11 @@
+import { CssVarsProvider, CssBaseline, GlobalStyles } from '@mui/joy'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
-
 import { BrowserRouter } from 'react-router-dom'
-import { CssVarsProvider, useColorScheme, CssBaseline, GlobalStyles } from '@mui/joy'
+import { ApolloProvider } from '@apollo/client';
+
+import App from './App.tsx'
+import { client } from './utils/apollo';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -21,7 +23,9 @@ createRoot(document.getElementById('root')!).render(
         }}
       />
       <BrowserRouter>
-        <App />
+        <ApolloProvider client={client}>
+          <App />
+        </ApolloProvider>
       </BrowserRouter>
     </CssVarsProvider>
   </StrictMode>,

@@ -1,5 +1,6 @@
 /* eslint-disable */
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -7,6 +8,7 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -16,6 +18,24 @@ export type Scalars = {
   Float: { input: number; output: number; }
   /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
   DateTime: { input: any; output: any; }
+};
+
+export type Company = {
+  __typename?: 'Company';
+  companyLimit: Scalars['Int']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  dayLimit: Scalars['Int']['output'];
+  days: Array<Scalars['Int']['output']>;
+  endTime: Scalars['DateTime']['output'];
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  phonesId: Scalars['Int']['output'];
+  reaction: Array<Scalars['Int']['output']>;
+  soundFileId: Scalars['Int']['output'];
+  startTime: Scalars['DateTime']['output'];
+  status: Scalars['Int']['output'];
+  updatetAt: Scalars['DateTime']['output'];
+  userId: Scalars['Int']['output'];
 };
 
 export type CreateCompanyInput = {
@@ -51,6 +71,134 @@ export type CreateUserInput = {
   email: Scalars['String']['input'];
   fullName: Scalars['String']['input'];
   picture?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  createCompany: Company;
+  createPhonelist: PhoneList;
+  createSoundfile: SoundFile;
+  createUser: User;
+  removeCompany: Company;
+  removePhonelist: PhoneList;
+  removeSoundfile: SoundFile;
+  removeUser: User;
+  updateCompany: Company;
+  updatePhonelist: PhoneList;
+  updateSoundfile: SoundFile;
+  updateUser: User;
+};
+
+
+export type MutationCreateCompanyArgs = {
+  createCompanyInput: CreateCompanyInput;
+};
+
+
+export type MutationCreatePhonelistArgs = {
+  createPhonelistInput: CreatePhonelistInput;
+};
+
+
+export type MutationCreateSoundfileArgs = {
+  createSoundfileInput: CreateSoundfileInput;
+};
+
+
+export type MutationCreateUserArgs = {
+  createUserInput: CreateUserInput;
+};
+
+
+export type MutationRemoveCompanyArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationRemovePhonelistArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationRemoveSoundfileArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationRemoveUserArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationUpdateCompanyArgs = {
+  updateCompanyInput: UpdateCompanyInput;
+};
+
+
+export type MutationUpdatePhonelistArgs = {
+  updatePhonelistInput: UpdatePhonelistInput;
+};
+
+
+export type MutationUpdateSoundfileArgs = {
+  updateSoundfileInput: UpdateSoundfileInput;
+};
+
+
+export type MutationUpdateUserArgs = {
+  updateUserInput: UpdateUserInput;
+};
+
+export type PhoneList = {
+  __typename?: 'PhoneList';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  phones: Array<Scalars['Int']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  userId: Scalars['Int']['output'];
+};
+
+export type Query = {
+  __typename?: 'Query';
+  companies: Array<Company>;
+  company: Company;
+  phonelist: PhoneList;
+  phonelists: Array<PhoneList>;
+  soundfile: SoundFile;
+  soundfiles: Array<SoundFile>;
+  user: User;
+  users: Array<User>;
+};
+
+
+export type QueryCompanyArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryPhonelistArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QuerySoundfileArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryUserArgs = {
+  id: Scalars['Int']['input'];
+};
+
+export type SoundFile = {
+  __typename?: 'SoundFile';
+  createdAt: Scalars['DateTime']['output'];
+  filePath: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  userId: Scalars['Int']['output'];
 };
 
 export type UpdateCompanyInput = {
@@ -89,6 +237,19 @@ export type UpdateUserInput = {
   picture?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type User = {
+  __typename?: 'User';
+  companies: Array<Company>;
+  createdAt: Scalars['DateTime']['output'];
+  email: Scalars['String']['output'];
+  fullName: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  phoneLists: Array<PhoneList>;
+  picture?: Maybe<Scalars['String']['output']>;
+  soundFiles: Array<SoundFile>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
 export type GetSoundFilesAndPhoneListsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -100,5 +261,101 @@ export type GetCompaniesQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetCompaniesQuery = { __typename?: 'Query', companies: Array<{ __typename?: 'Company', id: number, name: string, companyLimit: number, dayLimit: number, status: number, startTime: any, endTime: any, days: Array<number>, reaction: Array<number>, soundFileId: number, phonesId: number, userId: number }> };
 
 
-export const GetSoundFilesAndPhoneListsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetSoundFilesAndPhoneLists"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"soundfiles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"filePath"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"phonelists"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"phones"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}}]}}]}}]} as unknown as DocumentNode<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>;
-export const GetCompaniesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCompanies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"companies"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"companyLimit"}},{"kind":"Field","name":{"kind":"Name","value":"dayLimit"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"days"}},{"kind":"Field","name":{"kind":"Name","value":"reaction"}},{"kind":"Field","name":{"kind":"Name","value":"soundFileId"}},{"kind":"Field","name":{"kind":"Name","value":"phonesId"}},{"kind":"Field","name":{"kind":"Name","value":"userId"}}]}}]}}]} as unknown as DocumentNode<GetCompaniesQuery, GetCompaniesQueryVariables>;
+export const GetSoundFilesAndPhoneListsDocument = gql`
+    query GetSoundFilesAndPhoneLists {
+  soundfiles {
+    id
+    name
+    filePath
+    userId
+  }
+  phonelists {
+    id
+    name
+    phones
+    userId
+  }
+}
+    `;
+
+/**
+ * __useGetSoundFilesAndPhoneListsQuery__
+ *
+ * To run a query within a React component, call `useGetSoundFilesAndPhoneListsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSoundFilesAndPhoneListsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSoundFilesAndPhoneListsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetSoundFilesAndPhoneListsQuery(baseOptions?: Apollo.QueryHookOptions<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>(GetSoundFilesAndPhoneListsDocument, options);
+      }
+export function useGetSoundFilesAndPhoneListsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>(GetSoundFilesAndPhoneListsDocument, options);
+        }
+export function useGetSoundFilesAndPhoneListsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>(GetSoundFilesAndPhoneListsDocument, options);
+        }
+export type GetSoundFilesAndPhoneListsQueryHookResult = ReturnType<typeof useGetSoundFilesAndPhoneListsQuery>;
+export type GetSoundFilesAndPhoneListsLazyQueryHookResult = ReturnType<typeof useGetSoundFilesAndPhoneListsLazyQuery>;
+export type GetSoundFilesAndPhoneListsSuspenseQueryHookResult = ReturnType<typeof useGetSoundFilesAndPhoneListsSuspenseQuery>;
+export type GetSoundFilesAndPhoneListsQueryResult = Apollo.QueryResult<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>;
+export const GetCompaniesDocument = gql`
+    query GetCompanies {
+  companies {
+    id
+    name
+    companyLimit
+    dayLimit
+    status
+    startTime
+    endTime
+    days
+    reaction
+    soundFileId
+    phonesId
+    userId
+  }
+}
+    `;
+
+/**
+ * __useGetCompaniesQuery__
+ *
+ * To run a query within a React component, call `useGetCompaniesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCompaniesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCompaniesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetCompaniesQuery(baseOptions?: Apollo.QueryHookOptions<GetCompaniesQuery, GetCompaniesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCompaniesQuery, GetCompaniesQueryVariables>(GetCompaniesDocument, options);
+      }
+export function useGetCompaniesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCompaniesQuery, GetCompaniesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCompaniesQuery, GetCompaniesQueryVariables>(GetCompaniesDocument, options);
+        }
+export function useGetCompaniesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCompaniesQuery, GetCompaniesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetCompaniesQuery, GetCompaniesQueryVariables>(GetCompaniesDocument, options);
+        }
+export type GetCompaniesQueryHookResult = ReturnType<typeof useGetCompaniesQuery>;
+export type GetCompaniesLazyQueryHookResult = ReturnType<typeof useGetCompaniesLazyQuery>;
+export type GetCompaniesSuspenseQueryHookResult = ReturnType<typeof useGetCompaniesSuspenseQuery>;
+export type GetCompaniesQueryResult = Apollo.QueryResult<GetCompaniesQuery, GetCompaniesQueryVariables>;

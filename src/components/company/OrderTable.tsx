@@ -1,10 +1,7 @@
-import { useQuery } from '@apollo/client';
 import { Search, FilterAlt, ArrowDownward, AutorenewRounded, Block, MoreHorizRounded, KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import { FormControl, Link, FormLabel, Select, Option, Sheet, Input, IconButton, Modal, ModalDialog, ModalClose, Typography, Divider, Button, Box, Table, Checkbox, Chip, ColorPaletteProp, Dropdown, MenuButton, Menu, MenuItem } from '@mui/joy';
-import { useEffect, useState } from 'react';
-import { COMPANIES_QUERY } from '../../graphql/companies';
-import { Company } from '../../types';
-import { graphql } from '../../gql';
+import { useState } from 'react';
+import { Company, useGetCompaniesQuery } from '../../__generated__/graphql';
 // import EditCompanyModal from './modals/EditCompanyModal';
 // import DeleteCompanyModal from './modals/DeleteCompanyModal';
 // import http from "../utils/api/http-client";
@@ -14,28 +11,14 @@ type Reaction = {
     [key: string]: string;
 };
 
-type DataOrder = {
-    id: number;
-    name: string;
-    companyLimit: number;
-    dayLimit: number;
-    status: number;
-    days: Array<number>;
-    reaction: Array<number>;
-    soundFileId: number;
-    phonesId: number;
-    userId: number;
-};
+type DataOrder = Omit<Company, '__typename' | 'createdAt' | 'updatetAt' | 'phonesId' | 'userId' | 'endTime' | 'startTime' | 'reaction' | 'days'>
 
 interface HeadCell {
-    disablePadding: boolean;
     id: keyof DataOrder;
-    label: string;
     numeric: boolean;
+    disablePadding: boolean;
+    label: string;
 }
-
-type DataOrders = DataOrder[];
-
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
@@ -91,26 +74,7 @@ const OrderTable = (() => {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState('');
 
-    const GET_COMPANIES = graphql(`
-        query GetCompanies {
-            companies {
-                id
-                name
-                companyLimit
-                dayLimit
-                status
-                startTime
-                endTime
-                days
-                reaction
-                soundFileId
-                phonesId
-                userId
-            }
-        }
-    `)
-
-    const { data } = useQuery(GET_COMPANIES);
+    const { data } = useGetCompaniesQuery();
     const companies = data?.companies || [];
 
     // console.log("ccc store",companyStore)

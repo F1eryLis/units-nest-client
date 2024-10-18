@@ -2,11 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip, ListDivider, IconButton } from '@mui/joy';
 import { CallToAction, Create, Delete, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
 import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
-import { gql, useMutation, useQuery } from '@apollo/client';
-import { COMPANIES_QUERY, CREATE_COMPANY_QUERY } from '../../graphql/companies';
-import { SOUNDFILES_QUERY } from '../../graphql/sounFiles';
-import { PhoneList, SoundFile } from '../../types';
-import { PHONELISTS_QUERY } from '../../graphql/phoneLists';
 import { graphql } from '../../gql';
 
 interface CreateCompanyModalProps {
@@ -31,23 +26,6 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
     const [editPhoneModalOpen, setEditPhoneModalOpen] = useState<boolean>(false);
 
     const [editPhoneModalIndex, setEditPhoneModalIndex] = useState<number>(0);
-
-    const GET_SOUNDFILES_AND_PHONELISTS = graphql(`
-        query GetSoundFilesAndPhoneLists {
-            soundfiles {
-                id
-                name
-                filePath
-                userId
-            }
-            phonelists {
-                id
-                name
-                phones
-                userId
-            }
-        }
-    `);
 
     const { data } = useQuery(GET_SOUNDFILES_AND_PHONELISTS);
     const soundFiles = data?.soundfiles || [];

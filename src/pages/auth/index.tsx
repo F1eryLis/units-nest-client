@@ -87,7 +87,7 @@ const AuthPage = () => {
           >
             <Stack gap={4} sx={{ mb: 2 }}>
               <Typography level='h1' sx={{ textAlign: 'center', mb: 0, lineHeight: 0 }}>
-                Units platform
+                Units Platform
               </Typography>
               <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 

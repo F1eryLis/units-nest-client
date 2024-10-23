@@ -1,11 +1,8 @@
-import { Search, FilterAlt, ArrowDownward, AutorenewRounded, Block, MoreHorizRounded, KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
+import { Search, FilterAlt, ArrowDownward, AutorenewRounded, Block, MoreHorizRounded, KeyboardArrowLeft, KeyboardArrowRight, Check } from '@mui/icons-material';
 import { FormControl, Link, FormLabel, Select, Option, Sheet, Input, IconButton, Modal, ModalDialog, ModalClose, Typography, Divider, Button, Box, Table, Checkbox, Chip, ColorPaletteProp, Dropdown, MenuButton, Menu, MenuItem } from '@mui/joy';
 import { useState } from 'react';
-import { Company, useGetCompaniesQuery } from '../../__generated__/graphql';
-// import EditCompanyModal from './modals/EditCompanyModal';
-// import DeleteCompanyModal from './modals/DeleteCompanyModal';
-// import http from "../utils/api/http-client";
-// import { storesContext } from '../utils/stores';
+import { Company, GetCompaniesDocument, useGetCompaniesQuery, useUpdateCompanyMutation } from '../../__generated__/graphql';
+import EditCompanyModal from './EditCompanyModal';
 
 type Reaction = {
     [key: string]: string;
@@ -76,6 +73,12 @@ const OrderTable = (() => {
 
     const { data } = useGetCompaniesQuery();
     const companies = data?.companies || [];
+
+    const [updateCompany] = useUpdateCompanyMutation({
+        refetchQueries: [{
+            query: GetCompaniesDocument,
+        }],
+    });
 
     // console.log("ccc store",companyStore)
     const handleRequestSort = (
@@ -175,12 +178,6 @@ const OrderTable = (() => {
             disablePadding: false,
             label: 'Статус',
         },
-        // {
-        //   id: 'phones_id',
-        //   numeric: true,
-        //   disablePadding: false,
-        //   label: 'Список номеров',
-        // },
     ];
 
     const createSortHandler = (property: keyof DataOrder) => (event: React.MouseEvent<unknown>) => {
@@ -199,9 +196,16 @@ const OrderTable = (() => {
         return `${from}–${to} of ${count !== -1 ? count : `more than ${to}`}`;
     };
 
-    const handleStartStopStatus = (event: React.MouseEvent<unknown>, id: number) => {
+    const handleStartStopStatus = (event: React.MouseEvent<unknown>, id: number, status: number) => {
         event.stopPropagation();
-        // companyStore.updateCompany(id, { ...companyStore.getCompanyById(id), status: companyStore.getCompanyById(id)?.status ? 0 : 1 });
+        updateCompany({
+            variables: {
+                input: {
+                    id: id,
+                    status: status,
+                }
+            }
+        });
     }
 
     // Handle search input
@@ -312,8 +316,16 @@ const OrderTable = (() => {
                         </Sheet>
                     </ModalDialog>
                 </Modal>
-                {/* <EditCompanyModal id={selectedId} open={editModal} onClose={() => setEditModal(false)} />
-        <DeleteCompanyModal id={selectedId} open={deleteModal} onClose={() => setDeleteModal(false)} /> */}
+                <EditCompanyModal
+                    id={selectedId}
+                    companies={companies as Company[]}
+                    open={editModal}
+                    onClose={() => {
+                        setEditModal(false);
+                        setSelectedId(0);
+                    }}
+                />
+                {/* <DeleteCompanyModal id={selectedId} open={deleteModal} onClose={() => setDeleteModal(false)} /> */}
 
             </Sheet>
             <Box
@@ -474,14 +486,14 @@ const OrderTable = (() => {
                                         <td>
                                             <Typography level="body-xs">{row.dayLimit}</Typography>
                                         </td>
-                                        {/* <td>
+                                        <td>
                                             <Link
                                                 level="body-xs"
                                                 component="button"
                                                 onClick={(event) => {
                                                     event.stopPropagation();
                                                     const audioElement = document.getElementById(`singleo`) as HTMLAudioElement;
-                                                    audioElement.src = 'http://localhost:8001/' + soundfileStore.getSoundfileById(row.sound_file_id)?.file_path!;
+                                                    // audioElement.src = 'http://localhost:8001/' + soundfileStore.getSoundfileById(row.sound_file_id)?.file_path!;
                                                     console.log(audioElement.src);
                                                     // Checkup on real server
                                                     if (audioElement) {
@@ -495,74 +507,101 @@ const OrderTable = (() => {
                                                             });
                                                     }
                                                 }}>
-                                                Прослушать {row.sound_file_id}
+                                                Прослушать {row.soundFileId}
                                             </Link>
-                                        </td> */}
+                                        </td>
                                         <td>
                                             <Chip
                                                 variant="soft"
                                                 size="sm"
                                                 startDecorator={
                                                     {
-                                                        '1': <AutorenewRounded />,
                                                         '0': <Block />,
+                                                        '1': <AutorenewRounded />,
+                                                        '2': <Check />
                                                     }[row.status]
                                                 }
                                                 color={
                                                     {
-                                                        '1': 'success',
                                                         '0': 'danger',
+                                                        '1': 'warning',
+                                                        '2': 'success',
                                                     }[row.status] as ColorPaletteProp
                                                 }
                                             >
-                                                {{
-                                                    '1': 'В процессе',
-                                                    '0': 'Остановлен',
-                                                }[row.status]}
+                                                {
+                                                    {
+                                                        '0': 'Остановлен',
+                                                        '1': 'В процессе',
+                                                        '2': 'Выполнено',
+                                                    }[row.status]
+                                                }
                                             </Chip>
                                         </td>
-                                        {/* <td>
-                                            <Link
+                                        <td>
+                                            {/* <Link
                                                 level='body-xs'
                                                 component="button"
-                                                onClick={(event) => handlePhoneCall(
-                                                    event, row.id,
-                                                    soundfileStore.getSoundfileById(row.sound_file_id)?.file_path.replace(".wav", "")!)}
+                                            // onClick={(event) => handlePhoneCall(
+                                            //     event, row.id,
+                                            //     soundfileStore.getSoundfileById(row.sound_file_id)?.file_path.replace(".wav", "")!
+                                            // )}
                                             >
                                                 Автозвонок
-                                            </Link>
-                                        </td> */}
+                                            </Link> */}
+                                        </td>
                                         <td>
-                                            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-
-                                                <Link level="body-xs" component="button" onClick={(event) => handleStartStopStatus(event, row.id)}>
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    gap: 2,
+                                                    alignItems: 'center'
+                                                }}
+                                            >
+                                                <Link
+                                                    level="body-xs"
+                                                    component="button"
+                                                    onClick={(event) => handleStartStopStatus(event, row.id, row.status ? 0 : 1)}
+                                                >
                                                     Запустить/Остановить
                                                 </Link>
-
                                                 <Dropdown>
                                                     <MenuButton
                                                         slots={{ root: IconButton }}
-                                                        slotProps={{ root: { variant: 'plain', color: 'neutral', size: 'sm' } }}
+                                                        slotProps={{
+                                                            root: {
+                                                                variant: 'plain',
+                                                                color: 'neutral',
+                                                                size: 'sm'
+                                                            }
+                                                        }}
                                                         onClick={(event) => { event.stopPropagation() }}
                                                     >
                                                         <MoreHorizRounded />
                                                     </MenuButton>
-                                                    <Menu size="sm" sx={{ minWidth: 140 }}>
-                                                        <MenuItem onClick={(event) => {
-                                                            event.stopPropagation();
-                                                            setSelectedId(+row.id);
-                                                            console.log(row.id);
-                                                            setEditModal(true);
+                                                    <Menu
+                                                        size="sm"
+                                                        sx={{
+                                                            minWidth: 140
                                                         }}
+                                                    >
+                                                        <MenuItem
+                                                            onClick={(event) => {
+                                                                event.stopPropagation();
+                                                                setSelectedId(+row.id);
+                                                                console.log(row.id);
+                                                                setEditModal(true);
+                                                            }}
                                                         >
                                                             Редактировать
                                                         </MenuItem>
                                                         <Divider />
-                                                        <MenuItem onClick={(event) => {
-                                                            event.stopPropagation();
-                                                            setSelectedId(+row.id);
-                                                            setDeleteModal(true);
-                                                        }}
+                                                        <MenuItem
+                                                            onClick={(event) => {
+                                                                event.stopPropagation();
+                                                                setSelectedId(+row.id);
+                                                                setDeleteModal(true);
+                                                            }}
                                                             color="danger"
                                                         >
                                                             Удалить
@@ -652,5 +691,6 @@ const OrderTable = (() => {
             />
         </>
     );
-})
+});
+
 export default OrderTable

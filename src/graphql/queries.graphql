@@ -1,0 +1,149 @@
+query GetCompanies {
+    companies {
+        id
+        name
+        companyLimit
+        dayLimit
+        status
+        startTime
+        endTime
+        days
+        reaction
+        soundFileId
+        phonesId
+        userId
+    }
+}
+
+query GetCompany($id: Int!) {
+    company(id: $id) {
+        id
+        name
+        companyLimit
+        dayLimit
+        status
+        startTime
+        endTime
+        days
+        reaction
+        soundFileId
+        phonesId
+        userId
+    }
+}
+
+mutation CreateCompany($input: CreateCompanyInput!) {
+    createCompany(createCompanyInput: $input) {
+        name
+        companyLimit
+        dayLimit
+        status
+        startTime
+        endTime
+        days
+        reaction
+        soundFileId
+        phonesId
+        userId
+    }
+}
+
+mutation UpdateCompany($input: UpdateCompanyInput!) {
+    updateCompany(updateCompanyInput: $input) {
+    name
+    companyLimit
+    dayLimit
+    status
+    startTime
+    endTime
+    days
+    reaction
+    soundFileId
+    phonesId
+    userId
+  }
+}
+
+query GetPhoneLists {
+    phonelists {
+        id
+        name
+        phones
+        userId
+    }
+}
+
+query GetPhoneList($id: Int!) {
+    phonelist(id: $id) {
+        id
+        name
+        phones
+        userId
+    }
+}
+
+mutation CreatePhoneList($input: CreatePhonelistInput!) {
+    createPhonelist(createPhonelistInput: $input) {
+        name
+        phones
+        userId
+    }
+}
+
+mutation UpdatePhoneList($input: UpdatePhonelistInput!) {
+    updatePhonelist(updatePhonelistInput: $input) {
+        name
+        phones
+    }
+}
+
+query GetSoundFiles {
+    soundfiles {
+        id
+        name
+        filePath
+        userId
+    }
+}
+
+query GetSoundFile($id: Int!) {
+    soundfile(id: $id) {
+        id
+        name
+        filePath
+        userId
+    }
+}
+
+query GetSoundFilesAndPhoneLists {
+    soundfiles {
+        id
+        name
+        filePath
+        userId
+    }
+    phonelists {
+        id
+        name
+        phones
+        userId
+    }
+}
+
+query GetUsers {
+    users {
+        id
+        email
+        fullName
+        picture
+    }
+}
+
+query GetUser($id: Int!) {
+    user(id: $id) {
+        id
+        email
+        fullName
+        picture
+    }
+}

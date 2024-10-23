@@ -4,10 +4,11 @@ import React from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import OrderTable from '../components/company/OrderTable';
+import CreateCompanyModal from '../components/company/CreateCompanyModal';
 
 export default function DashboardPage() {
     const [createModalOpen, setCreateModalOpen] = React.useState<boolean>(false);
-    
+
     return (
         <Box sx={{ display: 'flex', minHeight: '100dvh' }}>
             <Header />
@@ -55,7 +56,10 @@ export default function DashboardPage() {
                     >
                         Добавить компанию
                     </Button>
-                    {/* <CreateCompanyModal open={createModalOpen} onClose={() => { setCreateModalOpen(false) }} /> */}
+                    <CreateCompanyModal
+                        open={createModalOpen}
+                        onClose={() => { setCreateModalOpen(false) }}
+                    />
                 </Box>
                 <OrderTable />
                 {/* <OrderList /> */}

@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
@@ -16,7 +15,6 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
   DateTime: { input: any; output: any; }
 };
 
@@ -44,9 +42,9 @@ export type CreateCompanyInput = {
   days?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
   endTime: Scalars['DateTime']['input'];
   name: Scalars['String']['input'];
-  phonesId: Scalars['Int']['input'];
+  phonesId?: InputMaybe<Scalars['Int']['input']>;
   reaction?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
-  soundFileId: Scalars['Int']['input'];
+  soundFileId?: InputMaybe<Scalars['Int']['input']>;
   startTime: Scalars['DateTime']['input'];
   status: Scalars['Int']['input'];
   userId: Scalars['Int']['input'];
@@ -56,7 +54,7 @@ export type CreatePhonelistInput = {
   /** Name of the phone list */
   name: Scalars['String']['input'];
   /** List of phone numbers */
-  phones: Array<Scalars['Int']['input']>;
+  phones: Array<Scalars['String']['input']>;
   /** User ID associated with the phone list */
   userId: Scalars['Int']['input'];
 };
@@ -154,7 +152,7 @@ export type PhoneList = {
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['Int']['output'];
   name: Scalars['String']['output'];
-  phones: Array<Scalars['Int']['output']>;
+  phones: Array<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   userId: Scalars['Int']['output'];
 };
@@ -219,7 +217,7 @@ export type UpdateCompanyInput = {
 export type UpdatePhonelistInput = {
   id: Scalars['Int']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
-  phones?: InputMaybe<Array<Scalars['Int']['input']>>;
+  phones?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   userId?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -246,69 +244,98 @@ export type User = {
   id: Scalars['Int']['output'];
   phoneLists: Array<PhoneList>;
   picture?: Maybe<Scalars['String']['output']>;
+  soundFile: SoundFile;
   soundFiles: Array<SoundFile>;
   updatedAt: Scalars['DateTime']['output'];
 };
 
-export type GetSoundFilesAndPhoneListsQueryVariables = Exact<{ [key: string]: never; }>;
 
-
-export type GetSoundFilesAndPhoneListsQuery = { __typename?: 'Query', soundfiles: Array<{ __typename?: 'SoundFile', id: number, name: string, filePath: string, userId: number }>, phonelists: Array<{ __typename?: 'PhoneList', id: number, name: string, phones: Array<number>, userId: number }> };
+export type UserSoundFileArgs = {
+  id: Scalars['Int']['input'];
+};
 
 export type GetCompaniesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetCompaniesQuery = { __typename?: 'Query', companies: Array<{ __typename?: 'Company', id: number, name: string, companyLimit: number, dayLimit: number, status: number, startTime: any, endTime: any, days: Array<number>, reaction: Array<number>, soundFileId: number, phonesId: number, userId: number }> };
 
+export type GetCompanyQueryVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
 
-export const GetSoundFilesAndPhoneListsDocument = gql`
-    query GetSoundFilesAndPhoneLists {
-  soundfiles {
-    id
-    name
-    filePath
-    userId
-  }
-  phonelists {
-    id
-    name
-    phones
-    userId
-  }
-}
-    `;
 
-/**
- * __useGetSoundFilesAndPhoneListsQuery__
- *
- * To run a query within a React component, call `useGetSoundFilesAndPhoneListsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetSoundFilesAndPhoneListsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetSoundFilesAndPhoneListsQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetSoundFilesAndPhoneListsQuery(baseOptions?: Apollo.QueryHookOptions<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>(GetSoundFilesAndPhoneListsDocument, options);
-      }
-export function useGetSoundFilesAndPhoneListsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>(GetSoundFilesAndPhoneListsDocument, options);
-        }
-export function useGetSoundFilesAndPhoneListsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>(GetSoundFilesAndPhoneListsDocument, options);
-        }
-export type GetSoundFilesAndPhoneListsQueryHookResult = ReturnType<typeof useGetSoundFilesAndPhoneListsQuery>;
-export type GetSoundFilesAndPhoneListsLazyQueryHookResult = ReturnType<typeof useGetSoundFilesAndPhoneListsLazyQuery>;
-export type GetSoundFilesAndPhoneListsSuspenseQueryHookResult = ReturnType<typeof useGetSoundFilesAndPhoneListsSuspenseQuery>;
-export type GetSoundFilesAndPhoneListsQueryResult = Apollo.QueryResult<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>;
+export type GetCompanyQuery = { __typename?: 'Query', company: { __typename?: 'Company', id: number, name: string, companyLimit: number, dayLimit: number, status: number, startTime: any, endTime: any, days: Array<number>, reaction: Array<number>, soundFileId: number, phonesId: number, userId: number } };
+
+export type CreateCompanyMutationVariables = Exact<{
+  input: CreateCompanyInput;
+}>;
+
+
+export type CreateCompanyMutation = { __typename?: 'Mutation', createCompany: { __typename?: 'Company', name: string, companyLimit: number, dayLimit: number, status: number, startTime: any, endTime: any, days: Array<number>, reaction: Array<number>, soundFileId: number, phonesId: number, userId: number } };
+
+export type UpdateCompanyMutationVariables = Exact<{
+  input: UpdateCompanyInput;
+}>;
+
+
+export type UpdateCompanyMutation = { __typename?: 'Mutation', updateCompany: { __typename?: 'Company', name: string, companyLimit: number, dayLimit: number, status: number, startTime: any, endTime: any, days: Array<number>, reaction: Array<number>, soundFileId: number, phonesId: number, userId: number } };
+
+export type GetPhoneListsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPhoneListsQuery = { __typename?: 'Query', phonelists: Array<{ __typename?: 'PhoneList', id: number, name: string, phones: Array<string>, userId: number }> };
+
+export type GetPhoneListQueryVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type GetPhoneListQuery = { __typename?: 'Query', phonelist: { __typename?: 'PhoneList', id: number, name: string, phones: Array<string>, userId: number } };
+
+export type CreatePhoneListMutationVariables = Exact<{
+  input: CreatePhonelistInput;
+}>;
+
+
+export type CreatePhoneListMutation = { __typename?: 'Mutation', createPhonelist: { __typename?: 'PhoneList', name: string, phones: Array<string>, userId: number } };
+
+export type UpdatePhoneListMutationVariables = Exact<{
+  input: UpdatePhonelistInput;
+}>;
+
+
+export type UpdatePhoneListMutation = { __typename?: 'Mutation', updatePhonelist: { __typename?: 'PhoneList', name: string, phones: Array<string> } };
+
+export type GetSoundFilesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetSoundFilesQuery = { __typename?: 'Query', soundfiles: Array<{ __typename?: 'SoundFile', id: number, name: string, filePath: string, userId: number }> };
+
+export type GetSoundFileQueryVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type GetSoundFileQuery = { __typename?: 'Query', soundfile: { __typename?: 'SoundFile', id: number, name: string, filePath: string, userId: number } };
+
+export type GetSoundFilesAndPhoneListsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetSoundFilesAndPhoneListsQuery = { __typename?: 'Query', soundfiles: Array<{ __typename?: 'SoundFile', id: number, name: string, filePath: string, userId: number }>, phonelists: Array<{ __typename?: 'PhoneList', id: number, name: string, phones: Array<string>, userId: number }> };
+
+export type GetUsersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: number, email: string, fullName: string, picture?: string | null }> };
+
+export type GetUserQueryVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type GetUserQuery = { __typename?: 'Query', user: { __typename?: 'User', id: number, email: string, fullName: string, picture?: string | null } };
+
+
 export const GetCompaniesDocument = gql`
     query GetCompanies {
   companies {
@@ -359,3 +386,512 @@ export type GetCompaniesQueryHookResult = ReturnType<typeof useGetCompaniesQuery
 export type GetCompaniesLazyQueryHookResult = ReturnType<typeof useGetCompaniesLazyQuery>;
 export type GetCompaniesSuspenseQueryHookResult = ReturnType<typeof useGetCompaniesSuspenseQuery>;
 export type GetCompaniesQueryResult = Apollo.QueryResult<GetCompaniesQuery, GetCompaniesQueryVariables>;
+export const GetCompanyDocument = gql`
+    query GetCompany($id: Int!) {
+  company(id: $id) {
+    id
+    name
+    companyLimit
+    dayLimit
+    status
+    startTime
+    endTime
+    days
+    reaction
+    soundFileId
+    phonesId
+    userId
+  }
+}
+    `;
+
+/**
+ * __useGetCompanyQuery__
+ *
+ * To run a query within a React component, call `useGetCompanyQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCompanyQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCompanyQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetCompanyQuery(baseOptions: Apollo.QueryHookOptions<GetCompanyQuery, GetCompanyQueryVariables> & ({ variables: GetCompanyQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCompanyQuery, GetCompanyQueryVariables>(GetCompanyDocument, options);
+      }
+export function useGetCompanyLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCompanyQuery, GetCompanyQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCompanyQuery, GetCompanyQueryVariables>(GetCompanyDocument, options);
+        }
+export function useGetCompanySuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCompanyQuery, GetCompanyQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetCompanyQuery, GetCompanyQueryVariables>(GetCompanyDocument, options);
+        }
+export type GetCompanyQueryHookResult = ReturnType<typeof useGetCompanyQuery>;
+export type GetCompanyLazyQueryHookResult = ReturnType<typeof useGetCompanyLazyQuery>;
+export type GetCompanySuspenseQueryHookResult = ReturnType<typeof useGetCompanySuspenseQuery>;
+export type GetCompanyQueryResult = Apollo.QueryResult<GetCompanyQuery, GetCompanyQueryVariables>;
+export const CreateCompanyDocument = gql`
+    mutation CreateCompany($input: CreateCompanyInput!) {
+  createCompany(createCompanyInput: $input) {
+    name
+    companyLimit
+    dayLimit
+    status
+    startTime
+    endTime
+    days
+    reaction
+    soundFileId
+    phonesId
+    userId
+  }
+}
+    `;
+export type CreateCompanyMutationFn = Apollo.MutationFunction<CreateCompanyMutation, CreateCompanyMutationVariables>;
+
+/**
+ * __useCreateCompanyMutation__
+ *
+ * To run a mutation, you first call `useCreateCompanyMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateCompanyMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createCompanyMutation, { data, loading, error }] = useCreateCompanyMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateCompanyMutation(baseOptions?: Apollo.MutationHookOptions<CreateCompanyMutation, CreateCompanyMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateCompanyMutation, CreateCompanyMutationVariables>(CreateCompanyDocument, options);
+      }
+export type CreateCompanyMutationHookResult = ReturnType<typeof useCreateCompanyMutation>;
+export type CreateCompanyMutationResult = Apollo.MutationResult<CreateCompanyMutation>;
+export type CreateCompanyMutationOptions = Apollo.BaseMutationOptions<CreateCompanyMutation, CreateCompanyMutationVariables>;
+export const UpdateCompanyDocument = gql`
+    mutation UpdateCompany($input: UpdateCompanyInput!) {
+  updateCompany(updateCompanyInput: $input) {
+    name
+    companyLimit
+    dayLimit
+    status
+    startTime
+    endTime
+    days
+    reaction
+    soundFileId
+    phonesId
+    userId
+  }
+}
+    `;
+export type UpdateCompanyMutationFn = Apollo.MutationFunction<UpdateCompanyMutation, UpdateCompanyMutationVariables>;
+
+/**
+ * __useUpdateCompanyMutation__
+ *
+ * To run a mutation, you first call `useUpdateCompanyMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCompanyMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCompanyMutation, { data, loading, error }] = useUpdateCompanyMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateCompanyMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCompanyMutation, UpdateCompanyMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCompanyMutation, UpdateCompanyMutationVariables>(UpdateCompanyDocument, options);
+      }
+export type UpdateCompanyMutationHookResult = ReturnType<typeof useUpdateCompanyMutation>;
+export type UpdateCompanyMutationResult = Apollo.MutationResult<UpdateCompanyMutation>;
+export type UpdateCompanyMutationOptions = Apollo.BaseMutationOptions<UpdateCompanyMutation, UpdateCompanyMutationVariables>;
+export const GetPhoneListsDocument = gql`
+    query GetPhoneLists {
+  phonelists {
+    id
+    name
+    phones
+    userId
+  }
+}
+    `;
+
+/**
+ * __useGetPhoneListsQuery__
+ *
+ * To run a query within a React component, call `useGetPhoneListsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPhoneListsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPhoneListsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetPhoneListsQuery(baseOptions?: Apollo.QueryHookOptions<GetPhoneListsQuery, GetPhoneListsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPhoneListsQuery, GetPhoneListsQueryVariables>(GetPhoneListsDocument, options);
+      }
+export function useGetPhoneListsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPhoneListsQuery, GetPhoneListsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPhoneListsQuery, GetPhoneListsQueryVariables>(GetPhoneListsDocument, options);
+        }
+export function useGetPhoneListsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPhoneListsQuery, GetPhoneListsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPhoneListsQuery, GetPhoneListsQueryVariables>(GetPhoneListsDocument, options);
+        }
+export type GetPhoneListsQueryHookResult = ReturnType<typeof useGetPhoneListsQuery>;
+export type GetPhoneListsLazyQueryHookResult = ReturnType<typeof useGetPhoneListsLazyQuery>;
+export type GetPhoneListsSuspenseQueryHookResult = ReturnType<typeof useGetPhoneListsSuspenseQuery>;
+export type GetPhoneListsQueryResult = Apollo.QueryResult<GetPhoneListsQuery, GetPhoneListsQueryVariables>;
+export const GetPhoneListDocument = gql`
+    query GetPhoneList($id: Int!) {
+  phonelist(id: $id) {
+    id
+    name
+    phones
+    userId
+  }
+}
+    `;
+
+/**
+ * __useGetPhoneListQuery__
+ *
+ * To run a query within a React component, call `useGetPhoneListQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPhoneListQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPhoneListQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetPhoneListQuery(baseOptions: Apollo.QueryHookOptions<GetPhoneListQuery, GetPhoneListQueryVariables> & ({ variables: GetPhoneListQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPhoneListQuery, GetPhoneListQueryVariables>(GetPhoneListDocument, options);
+      }
+export function useGetPhoneListLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPhoneListQuery, GetPhoneListQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPhoneListQuery, GetPhoneListQueryVariables>(GetPhoneListDocument, options);
+        }
+export function useGetPhoneListSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPhoneListQuery, GetPhoneListQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPhoneListQuery, GetPhoneListQueryVariables>(GetPhoneListDocument, options);
+        }
+export type GetPhoneListQueryHookResult = ReturnType<typeof useGetPhoneListQuery>;
+export type GetPhoneListLazyQueryHookResult = ReturnType<typeof useGetPhoneListLazyQuery>;
+export type GetPhoneListSuspenseQueryHookResult = ReturnType<typeof useGetPhoneListSuspenseQuery>;
+export type GetPhoneListQueryResult = Apollo.QueryResult<GetPhoneListQuery, GetPhoneListQueryVariables>;
+export const CreatePhoneListDocument = gql`
+    mutation CreatePhoneList($input: CreatePhonelistInput!) {
+  createPhonelist(createPhonelistInput: $input) {
+    name
+    phones
+    userId
+  }
+}
+    `;
+export type CreatePhoneListMutationFn = Apollo.MutationFunction<CreatePhoneListMutation, CreatePhoneListMutationVariables>;
+
+/**
+ * __useCreatePhoneListMutation__
+ *
+ * To run a mutation, you first call `useCreatePhoneListMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreatePhoneListMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createPhoneListMutation, { data, loading, error }] = useCreatePhoneListMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreatePhoneListMutation(baseOptions?: Apollo.MutationHookOptions<CreatePhoneListMutation, CreatePhoneListMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreatePhoneListMutation, CreatePhoneListMutationVariables>(CreatePhoneListDocument, options);
+      }
+export type CreatePhoneListMutationHookResult = ReturnType<typeof useCreatePhoneListMutation>;
+export type CreatePhoneListMutationResult = Apollo.MutationResult<CreatePhoneListMutation>;
+export type CreatePhoneListMutationOptions = Apollo.BaseMutationOptions<CreatePhoneListMutation, CreatePhoneListMutationVariables>;
+export const UpdatePhoneListDocument = gql`
+    mutation UpdatePhoneList($input: UpdatePhonelistInput!) {
+  updatePhonelist(updatePhonelistInput: $input) {
+    name
+    phones
+  }
+}
+    `;
+export type UpdatePhoneListMutationFn = Apollo.MutationFunction<UpdatePhoneListMutation, UpdatePhoneListMutationVariables>;
+
+/**
+ * __useUpdatePhoneListMutation__
+ *
+ * To run a mutation, you first call `useUpdatePhoneListMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdatePhoneListMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updatePhoneListMutation, { data, loading, error }] = useUpdatePhoneListMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdatePhoneListMutation(baseOptions?: Apollo.MutationHookOptions<UpdatePhoneListMutation, UpdatePhoneListMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdatePhoneListMutation, UpdatePhoneListMutationVariables>(UpdatePhoneListDocument, options);
+      }
+export type UpdatePhoneListMutationHookResult = ReturnType<typeof useUpdatePhoneListMutation>;
+export type UpdatePhoneListMutationResult = Apollo.MutationResult<UpdatePhoneListMutation>;
+export type UpdatePhoneListMutationOptions = Apollo.BaseMutationOptions<UpdatePhoneListMutation, UpdatePhoneListMutationVariables>;
+export const GetSoundFilesDocument = gql`
+    query GetSoundFiles {
+  soundfiles {
+    id
+    name
+    filePath
+    userId
+  }
+}
+    `;
+
+/**
+ * __useGetSoundFilesQuery__
+ *
+ * To run a query within a React component, call `useGetSoundFilesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSoundFilesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSoundFilesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetSoundFilesQuery(baseOptions?: Apollo.QueryHookOptions<GetSoundFilesQuery, GetSoundFilesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSoundFilesQuery, GetSoundFilesQueryVariables>(GetSoundFilesDocument, options);
+      }
+export function useGetSoundFilesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSoundFilesQuery, GetSoundFilesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSoundFilesQuery, GetSoundFilesQueryVariables>(GetSoundFilesDocument, options);
+        }
+export function useGetSoundFilesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetSoundFilesQuery, GetSoundFilesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetSoundFilesQuery, GetSoundFilesQueryVariables>(GetSoundFilesDocument, options);
+        }
+export type GetSoundFilesQueryHookResult = ReturnType<typeof useGetSoundFilesQuery>;
+export type GetSoundFilesLazyQueryHookResult = ReturnType<typeof useGetSoundFilesLazyQuery>;
+export type GetSoundFilesSuspenseQueryHookResult = ReturnType<typeof useGetSoundFilesSuspenseQuery>;
+export type GetSoundFilesQueryResult = Apollo.QueryResult<GetSoundFilesQuery, GetSoundFilesQueryVariables>;
+export const GetSoundFileDocument = gql`
+    query GetSoundFile($id: Int!) {
+  soundfile(id: $id) {
+    id
+    name
+    filePath
+    userId
+  }
+}
+    `;
+
+/**
+ * __useGetSoundFileQuery__
+ *
+ * To run a query within a React component, call `useGetSoundFileQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSoundFileQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSoundFileQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetSoundFileQuery(baseOptions: Apollo.QueryHookOptions<GetSoundFileQuery, GetSoundFileQueryVariables> & ({ variables: GetSoundFileQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSoundFileQuery, GetSoundFileQueryVariables>(GetSoundFileDocument, options);
+      }
+export function useGetSoundFileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSoundFileQuery, GetSoundFileQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSoundFileQuery, GetSoundFileQueryVariables>(GetSoundFileDocument, options);
+        }
+export function useGetSoundFileSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetSoundFileQuery, GetSoundFileQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetSoundFileQuery, GetSoundFileQueryVariables>(GetSoundFileDocument, options);
+        }
+export type GetSoundFileQueryHookResult = ReturnType<typeof useGetSoundFileQuery>;
+export type GetSoundFileLazyQueryHookResult = ReturnType<typeof useGetSoundFileLazyQuery>;
+export type GetSoundFileSuspenseQueryHookResult = ReturnType<typeof useGetSoundFileSuspenseQuery>;
+export type GetSoundFileQueryResult = Apollo.QueryResult<GetSoundFileQuery, GetSoundFileQueryVariables>;
+export const GetSoundFilesAndPhoneListsDocument = gql`
+    query GetSoundFilesAndPhoneLists {
+  soundfiles {
+    id
+    name
+    filePath
+    userId
+  }
+  phonelists {
+    id
+    name
+    phones
+    userId
+  }
+}
+    `;
+
+/**
+ * __useGetSoundFilesAndPhoneListsQuery__
+ *
+ * To run a query within a React component, call `useGetSoundFilesAndPhoneListsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSoundFilesAndPhoneListsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSoundFilesAndPhoneListsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetSoundFilesAndPhoneListsQuery(baseOptions?: Apollo.QueryHookOptions<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>(GetSoundFilesAndPhoneListsDocument, options);
+      }
+export function useGetSoundFilesAndPhoneListsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>(GetSoundFilesAndPhoneListsDocument, options);
+        }
+export function useGetSoundFilesAndPhoneListsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>(GetSoundFilesAndPhoneListsDocument, options);
+        }
+export type GetSoundFilesAndPhoneListsQueryHookResult = ReturnType<typeof useGetSoundFilesAndPhoneListsQuery>;
+export type GetSoundFilesAndPhoneListsLazyQueryHookResult = ReturnType<typeof useGetSoundFilesAndPhoneListsLazyQuery>;
+export type GetSoundFilesAndPhoneListsSuspenseQueryHookResult = ReturnType<typeof useGetSoundFilesAndPhoneListsSuspenseQuery>;
+export type GetSoundFilesAndPhoneListsQueryResult = Apollo.QueryResult<GetSoundFilesAndPhoneListsQuery, GetSoundFilesAndPhoneListsQueryVariables>;
+export const GetUsersDocument = gql`
+    query GetUsers {
+  users {
+    id
+    email
+    fullName
+    picture
+  }
+}
+    `;
+
+/**
+ * __useGetUsersQuery__
+ *
+ * To run a query within a React component, call `useGetUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUsersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetUsersQuery(baseOptions?: Apollo.QueryHookOptions<GetUsersQuery, GetUsersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUsersQuery, GetUsersQueryVariables>(GetUsersDocument, options);
+      }
+export function useGetUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUsersQuery, GetUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUsersQuery, GetUsersQueryVariables>(GetUsersDocument, options);
+        }
+export function useGetUsersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUsersQuery, GetUsersQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetUsersQuery, GetUsersQueryVariables>(GetUsersDocument, options);
+        }
+export type GetUsersQueryHookResult = ReturnType<typeof useGetUsersQuery>;
+export type GetUsersLazyQueryHookResult = ReturnType<typeof useGetUsersLazyQuery>;
+export type GetUsersSuspenseQueryHookResult = ReturnType<typeof useGetUsersSuspenseQuery>;
+export type GetUsersQueryResult = Apollo.QueryResult<GetUsersQuery, GetUsersQueryVariables>;
+export const GetUserDocument = gql`
+    query GetUser($id: Int!) {
+  user(id: $id) {
+    id
+    email
+    fullName
+    picture
+  }
+}
+    `;
+
+/**
+ * __useGetUserQuery__
+ *
+ * To run a query within a React component, call `useGetUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetUserQuery(baseOptions: Apollo.QueryHookOptions<GetUserQuery, GetUserQueryVariables> & ({ variables: GetUserQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserQuery, GetUserQueryVariables>(GetUserDocument, options);
+      }
+export function useGetUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserQuery, GetUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserQuery, GetUserQueryVariables>(GetUserDocument, options);
+        }
+export function useGetUserSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUserQuery, GetUserQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetUserQuery, GetUserQueryVariables>(GetUserDocument, options);
+        }
+export type GetUserQueryHookResult = ReturnType<typeof useGetUserQuery>;
+export type GetUserLazyQueryHookResult = ReturnType<typeof useGetUserLazyQuery>;
+export type GetUserSuspenseQueryHookResult = ReturnType<typeof useGetUserSuspenseQuery>;
+export type GetUserQueryResult = Apollo.QueryResult<GetUserQuery, GetUserQueryVariables>;

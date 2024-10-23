@@ -1,25 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip, ListDivider, IconButton } from '@mui/joy';
+import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip, IconButton, ListDivider } from '@mui/joy';
 import { CallToAction, Create, Delete, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
 import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
-import { GetCompaniesDocument, PhoneList, useCreateCompanyMutation, useGetSoundFilesAndPhoneListsQuery } from '../../__generated__/graphql';
+import { Company, GetCompaniesDocument, useGetSoundFilesAndPhoneListsQuery, useUpdateCompanyMutation } from '../../__generated__/graphql';
+import { format } from 'date-fns';
 import CreatePhoneModal from '../phoneList/CreatePhoneModal';
-import EditPhoneModal from '../phoneList/EditPhoneModal';
 
-interface CreateCompanyModalProps {
+interface EditCompanyModalProps {
+    id: number;
+    companies: Company[];
     open: boolean;
     onClose: () => void;
 }
 
-const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose }) => {
+const EditCompanyModal: React.FC<EditCompanyModalProps> = (({ id, companies, open, onClose }) => {
     const [companyName, setCompanyName] = useState<string>('');
-    const [companyLimit, setCompanyLimit] = useState<string>('90');
-    const [dailyLimit, setDailyLimit] = useState<string>('9');
-    const [soundFile, setSoundFile] = useState<number>();
+    const [companyLimit, setCompanyLimit] = useState<string>('');
+    const [dailyLimit, setDailyLimit] = useState<string>('');
+    const [soundFile, setSoundFile] = useState<number>(0);
     const [startTime, setStartTime] = useState<string>('');
     const [endTime, setEndTime] = useState<string>('');
     const [reaction, setReaction] = useState<number[]>([]);
-    const [phoneList, setPhoneList] = useState<number>();
+    const [phoneList, setPhoneList] = useState<number>(0);
     const [days, setDays] = useState<number[]>([]);
 
     const { recorderState, ...handlers }: UseRecorder = useRecorder();
@@ -27,91 +29,67 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
 
     const [createPhoneModalOpen, setCreatePhoneModalOpen] = useState<boolean>(false);
     const [editPhoneModalOpen, setEditPhoneModalOpen] = useState<boolean>(false);
-
     const [editPhoneModalIndex, setEditPhoneModalIndex] = useState<number>(0);
 
     const { data } = useGetSoundFilesAndPhoneListsQuery({
         skip: !open,
     });
-    const soundFiles = data?.soundfiles || [];
     const phoneLists = data?.phonelists || [];
+    const soundFiles = data?.soundfiles || [];
 
-    const [createCompany] = useCreateCompanyMutation({
+    const [updateCompany] = useUpdateCompanyMutation({
         refetchQueries: [{
             query: GetCompaniesDocument,
         }],
     });
+
+    useEffect(() => {
+        const company = companies.find(company => company.id === id);
+        if (company) {
+            setCompanyName(company.name);
+            setCompanyLimit(company.companyLimit.toString());
+            setDailyLimit(company.dayLimit.toString());
+            setSoundFile(company.soundFileId);
+            setStartTime(company.startTime && format(new Date(company?.startTime), 'HH:mm'));
+            setEndTime(company.endTime && format(new Date(company?.endTime), 'HH:mm'));
+            setReaction(company.reaction ? company.reaction : []);
+            setPhoneList(company.phonesId);
+            setDays(company.days ? company.days : []);
+        }
+    }, [id]);
 
     const handleDeletePhoneList = (index: number) => {
         // phoneListStore.deletePhonesList(phoneListStore.phonesList[index].id);
     }
 
     const handleSubmit = () => {
-        console.log(new Date().setHours(+startTime.split(':')[0], +startTime.split(':')[1]));
-        console.log(new Date().setHours(+endTime.split(':')[0], +endTime.split(':')[1]));
-
-        createCompany({
+        updateCompany({
             variables: {
                 input: {
+                    id: id,
                     name: companyName,
                     companyLimit: parseInt(companyLimit, 10),
                     dayLimit: parseInt(dailyLimit, 10),
-                    status: 0,
                     startTime: new Date().setHours(+startTime.split(':')[0], +startTime.split(':')[1], 0, 0),
                     endTime: new Date().setHours(+endTime.split(':')[0], +endTime.split(':')[1], 0, 0),
                     days: days,
                     reaction: reaction,
                     soundFileId: soundFile,
                     phonesId: phoneList,
-                    userId: 1,
-                }
-            }
+                },
+            },
         });
-
-        onClose(); // Закрыть модальное окно после отправки формы
+        onClose();
     };
-
-    const useMediaQuery = (query: string): boolean => {
-        const [matches, setMatches] = useState<boolean>(false);
-
-        useEffect(() => {
-            const mediaQueryList = window.matchMedia(query);
-            const documentChangeHandler = () => setMatches(mediaQueryList.matches);
-
-            mediaQueryList.addEventListener('change', documentChangeHandler);
-
-            // Set the initial state
-            setMatches(mediaQueryList.matches);
-
-            return () => {
-                mediaQueryList.removeEventListener('change', documentChangeHandler);
-            };
-        }, [query]);
-
-        return matches;
-    };
-
-    const isMobile = useMediaQuery('(max-width:600px)');
 
     return (
-        <Modal open={open} onClose={() => onClose()} >
+        <Modal
+            open={open}
+            onClose={() => onClose()}
+        >
             <ModalDialog
-                size='lg'
-                color="primary"
-                layout={isMobile ? "fullscreen" : "center"}
-                variant="outlined"
-                sx={{
-                    maxWidth: '460px',
-                    '@media (max-width: 600px)': {
-                        maxWidth: '100%',
-                        margin: '0 10px',
-                    },
-                    '@media (max-width: 450px)': {
-                        maxWidth: '100vw',
-                        margin: '0',
-                        borderRadius: 0,
-                    },
-                }}
+                size='sm'
+                maxWidth='460px'
             >
                 <ModalClose />
                 <FormControl>
@@ -140,12 +118,20 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                 >
                     <Accordion>
                         <AccordionSummary>
-                            <Avatar color="primary">
+                            <Avatar
+                                color="primary"
+                            >
                                 <TapAndPlay />
                             </Avatar>
                             <ListItemContent>
-                                <Typography level="title-md">База номеров</Typography>
-                                <Typography level="body-sm">
+                                <Typography
+                                    level="title-md"
+                                >
+                                    База номеров
+                                </Typography>
+                                <Typography
+                                    level="body-sm"
+                                >
                                     Выберите номера для вашей компании
                                 </Typography>
                             </ListItemContent>
@@ -160,78 +146,115 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                                 }}
                             >
                                 <List>
-                                    <ListItem nested >
+                                    <ListItem nested>
                                         <ListSubheader sticky>
-                                            <Button size="sm" sx={{ width: '100%' }} onClick={() => setCreatePhoneModalOpen(true)}>
+                                            <Button
+                                                size="sm"
+                                                sx={{
+                                                    width: '100%'
+                                                }}
+                                                onClick={() => setCreatePhoneModalOpen(true)}
+                                            >
                                                 Добавить базу номеров
                                             </Button>
                                         </ListSubheader>
                                         <List>
                                             {
-                                                phoneLists.length > 0 ? (
-                                                    phoneLists.map((item, index) => (
-                                                        <Stack key={index}>
-                                                            <ListItem endAction={
-                                                                <Stack direction={'row'}>
-                                                                    <IconButton
-                                                                        aria-label="Edit"
-                                                                        size="sm"
-                                                                        variant="plain"
-                                                                        color="success"
-                                                                        onClick={() => {
-                                                                            setEditPhoneModalOpen(true);
-                                                                            setEditPhoneModalIndex(item.id)
-                                                                        }}
-                                                                    >
-                                                                        <Create />
-                                                                    </IconButton>
-                                                                    <IconButton
-                                                                        aria-label="Delete"
-                                                                        size="sm"
-                                                                        variant="plain"
-                                                                        color="danger"
-                                                                        onClick={() => { handleDeletePhoneList(index) }}
-                                                                    >
-                                                                        <Delete />
-                                                                    </IconButton>
-                                                                </Stack>
-                                                            }>
-                                                                <Tooltip title={
-                                                                    <Box sx={{ p: 1 }}>
-                                                                        {item.phones.slice(0, 5).map((phone, phoneIndex) => (
-                                                                            <Box key={phoneIndex} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                                                <PhoneAndroid color="primary" />
-                                                                                <Typography fontWeight="lg" fontSize="sm" sx={{ color: 'text.secondary' }}>
-                                                                                    {phone}
-                                                                                </Typography>
+                                                phoneLists.length > 0
+                                                    ?
+                                                    (
+                                                        phoneLists.map((item, index) => (
+                                                            <Stack
+                                                                key={index}
+                                                            >
+                                                                <ListItem
+                                                                    endAction={
+                                                                        <Stack
+                                                                            direction={'row'}
+                                                                        >
+                                                                            <IconButton
+                                                                                aria-label="Edit"
+                                                                                size="sm"
+                                                                                variant="plain"
+                                                                                color="success"
+                                                                                onClick={() => {
+                                                                                    setEditPhoneModalOpen(true);
+                                                                                    setEditPhoneModalIndex(item.id)
+                                                                                }}
+                                                                            >
+                                                                                <Create />
+                                                                            </IconButton>
+                                                                            <IconButton
+                                                                                aria-label="Delete"
+                                                                                size="sm"
+                                                                                variant="plain"
+                                                                                color="danger"
+                                                                                onClick={() => { handleDeletePhoneList(index) }}
+                                                                            >
+                                                                                <Delete />
+                                                                            </IconButton>
+                                                                        </Stack>
+                                                                    }>
+                                                                    <Tooltip
+                                                                        title={
+                                                                            <Box
+                                                                                sx={{
+                                                                                    p: 1
+                                                                                }}
+                                                                            >
+                                                                                {item.phones.slice(0, 5).map((phone, phoneIndex) => (
+                                                                                    <Box
+                                                                                        key={phoneIndex}
+                                                                                        sx={{
+                                                                                            display: 'flex',
+                                                                                            alignItems: 'center',
+                                                                                            gap: 1
+                                                                                        }}
+                                                                                    >
+                                                                                        <PhoneAndroid color="primary" />
+                                                                                        <Typography
+                                                                                            fontWeight="lg"
+                                                                                            fontSize="sm"
+                                                                                            sx={{
+                                                                                                color: 'text.secondary'
+                                                                                            }}
+                                                                                        >
+                                                                                            {phone}
+                                                                                        </Typography>
+                                                                                    </Box>
+                                                                                ))}
                                                                             </Box>
-                                                                        ))}
-                                                                    </Box>
-                                                                }
-                                                                    placement="right"
-                                                                    variant="outlined"
-                                                                    arrow
-                                                                >
-                                                                    <ListItemButton
-                                                                        color={phoneList == item.id ? "success" : "neutral"}
-                                                                        onClick={() => {
-                                                                            setPhoneList(item.id)
-                                                                        }}
+                                                                        }
+                                                                        placement="right"
+                                                                        variant="outlined"
+                                                                        arrow
                                                                     >
-                                                                        {item.name}
-                                                                    </ListItemButton>
-                                                                </Tooltip>
-                                                            </ListItem>
-                                                            {phoneLists.length !== 1 && <ListDivider inset={'gutter'} />}
-                                                        </Stack>
-                                                    ))
-                                                ) : (
-                                                    <ListItem>
-                                                        <ListItemContent>
-                                                            <Typography level='title-sm' textAlign={'center'}>Пусто</Typography>
-                                                        </ListItemContent>
-                                                    </ListItem>
-                                                )
+                                                                        <ListItemButton
+                                                                            color={phoneList == item.id ? "success" : "neutral"}
+                                                                            onClick={() => {
+                                                                                setPhoneList(item.id)
+                                                                            }}
+                                                                        >
+                                                                            {item.name}
+                                                                        </ListItemButton>
+                                                                    </Tooltip>
+                                                                </ListItem>
+                                                                {phoneLists.length !== 1 && <ListDivider inset={'gutter'} />}
+                                                            </Stack>
+                                                        )))
+                                                    :
+                                                    (
+                                                        <ListItem>
+                                                            <ListItemContent>
+                                                                <Typography
+                                                                    level='title-sm'
+                                                                    textAlign={'center'}
+                                                                >
+                                                                    Пусто
+                                                                </Typography>
+                                                            </ListItemContent>
+                                                        </ListItem>
+                                                    )
                                             }
                                         </List>
                                     </ListItem>
@@ -263,6 +286,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                                         // defaultValue={2.5}
                                         slotProps={{
                                             input: {
+
                                                 min: 1,
                                                 max: 5,
                                                 step: 0.1,
@@ -300,8 +324,14 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                                 <MusicNote />
                             </Avatar>
                             <ListItemContent>
-                                <Typography level="title-md">Аудизоапись</Typography>
-                                <Typography level="body-sm">
+                                <Typography
+                                    level="title-md"
+                                >
+                                    Аудиозапись
+                                </Typography>
+                                <Typography
+                                    level="body-sm"
+                                >
                                     Выберите запись для вашей компании
                                 </Typography>
                             </ListItemContent>
@@ -326,7 +356,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                                 endDecorator={
                                     <Button
                                         onClick={() => {
-                                            document.getElementById('audioFileInput')?.click();
+                                            document.getElementById('audioFileInput')?.click()
                                         }}
                                     >
                                         Загрузить файл
@@ -335,9 +365,17 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                                 indicator=''
                             >
                                 {soundFiles.map((file) => (
-                                    <Option key={file.id} value={file.id}>
+                                    <Option
+                                        key={file.id}
+                                        value={file.id}
+                                    >
                                         <Box
-                                            sx={{ display: 'flex', justifyContent: 'space-between', gap: 1, width: '100%' }}
+                                            sx={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                gap: 1,
+                                                width: '100%'
+                                            }}
                                         >
                                             <Typography
                                                 sx={{
@@ -363,31 +401,54 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                                 ))}
                             </Select>
                             <Divider>
-                                <Chip sx={{ my: 2 }} variant="soft" color="neutral" size="sm">
+                                <Chip
+                                    sx={{
+                                        my: 2
+                                    }}
+                                    variant="soft"
+                                    color="neutral"
+                                    size="sm"
+                                >
                                     Звукозапись
                                 </Chip>
                             </Divider>
-
-
-                            <AudioRecorder recorderState={recorderState} handlers={handlers} />
-                            <RecordingsList audio={audio} />
+                            <AudioRecorder
+                                recorderState={recorderState}
+                                handlers={handlers}
+                            />
+                            <RecordingsList
+                                audio={audio}
+                            />
                         </AccordionDetails>
                     </Accordion>
                     <Accordion>
                         <AccordionSummary>
-                            <Avatar color="primary">
+                            <Avatar
+                                color="primary"
+                            >
                                 <Timer />
                             </Avatar>
                             <ListItemContent>
-                                <Typography level="title-md">Время</Typography>
-                                <Typography level="body-sm">
+                                <Typography
+                                    level="title-md"
+                                >
+                                    Время
+                                </Typography>
+                                <Typography
+                                    level="body-sm"
+                                >
                                     Выберите дни недели и время для обзвона
                                 </Typography>
                             </ListItemContent>
                         </AccordionSummary>
                         <AccordionDetails>
                             <Box >
-                                <Typography level="body-sm" sx={{ mb: 2 }}>
+                                <Typography
+                                    level="body-sm"
+                                    sx={{
+                                        mb: 2
+                                    }}
+                                >
                                     Выбор дней недели
                                 </Typography>
                                 <List
@@ -406,7 +467,9 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                                     }}
                                 >
                                     {['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].map((item, index) => (
-                                        <ListItem key={item}>
+                                        <ListItem
+                                            key={item}
+                                        >
                                             <Checkbox
                                                 disableIcon
                                                 overlay
@@ -414,6 +477,7 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                                                 checked={days.includes(index)}
                                                 // color="neutral"
                                                 variant={days.includes(index) ? 'outlined' : 'plain'}
+                                                value={days[index]}
                                                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                                                     if (event.target.checked) {
                                                         setDays((val) => [...val, index]);
@@ -437,14 +501,21 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                             </Box>
                             <Stack
                                 direction="row"
-                                sx={{ mt: 4 }}
+                                sx={{
+                                    mt: 4
+                                }}
                                 alignItems="center"
                                 spacing={3}
                                 justifyContent={'center'}
                             >
                                 <FormControl>
-                                    <Stack direction={'row'} spacing={2}>
-                                        <FormHelperText>C</FormHelperText>
+                                    <Stack
+                                        direction={'row'}
+                                        spacing={2}
+                                    >
+                                        <FormHelperText>
+                                            C
+                                        </FormHelperText>
                                         <Input
                                             value={startTime}
                                             onChange={(e) => setStartTime(e.target.value)}
@@ -459,8 +530,13 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                                     </Stack>
                                 </FormControl>
                                 <FormControl>
-                                    <Stack direction={'row'} spacing={2}>
-                                        <FormHelperText>До</FormHelperText>
+                                    <Stack
+                                        direction={'row'}
+                                        spacing={2}
+                                    >
+                                        <FormHelperText>
+                                            До
+                                        </FormHelperText>
                                         <Input
                                             value={endTime}
                                             onChange={(e) => setEndTime(e.target.value)}
@@ -479,34 +555,77 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                     </Accordion>
                     <Accordion>
                         <AccordionSummary>
-                            <Avatar color="primary">
+                            <Avatar
+                                color="primary"
+                            >
                                 <CallToAction />
                             </Avatar>
                             <ListItemContent>
-                                <Typography level="title-md">Реакция</Typography>
-                                <Typography level="body-sm">
+                                <Typography
+                                    level="title-md"
+                                >
+                                    Реакция
+                                </Typography>
+                                <Typography
+                                    level="body-sm"
+                                >
                                     Выберите ответную реакцию
                                 </Typography>
                             </ListItemContent>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Box sx={{ my: 4 }}>
+                            <Box
+                                sx={{
+                                    my: 4
+                                }}
+                            >
                                 <Grid
                                     justifyContent="space-around"
                                     container
-                                    spacing={{ xs: 2, md: 3 }}
-                                    columns={{ xs: 4, sm: 8, md: 12 }}
-                                    sx={{ flexGrow: 1 }}
+                                    spacing={{
+                                        xs: 2,
+                                        md: 3
+                                    }}
+                                    columns={{
+                                        xs: 4,
+                                        sm: 8,
+                                        md: 12
+                                    }}
+                                    sx={{
+                                        flexGrow: 1
+                                    }}
                                 >
                                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((i) => (
-                                        <Grid xs={2} sm={4} md={4} justifyItems="center" key={i}>
-                                            <Box sx={{ display: 'flex', justifyContent: 'center', justifyItems: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                                                <Button sx={{ maxWidth: '140px' }} variant="outlined" disabled>{i}</Button>
+                                        <Grid
+                                            xs={2}
+                                            sm={4}
+                                            md={4}
+                                            justifyItems="center"
+                                            key={i}
+                                        >
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                    justifyItems: 'center',
+                                                    alignItems: 'center',
+                                                    flexDirection: 'column'
+                                                }}
+                                            >
+                                                <Button
+                                                    sx={{
+                                                        maxWidth: '140px'
+                                                    }}
+                                                    variant="outlined"
+                                                    disabled>
+                                                    {i}
+                                                </Button>
                                                 <Select
                                                     size='sm'
                                                     indicator=''
                                                     placeholder='Не указан'
                                                     variant="plain"
+                                                    value={i}
                                                 // onChange={(_, nv) => { setReaction({ ...reaction, [i]: nv }); console.log(reaction); }}
                                                 >
                                                     <Option value="yes">Добавить в список</Option>
@@ -525,16 +644,11 @@ const CreateCompanyModal: React.FC<CreateCompanyModalProps> = (({ open, onClose 
                     open={createPhoneModalOpen}
                     onClose={() => setCreatePhoneModalOpen(false)}
                 />
-                <EditPhoneModal
-                    id={editPhoneModalIndex}
-                    phoneLists={phoneLists as PhoneList[]}
-                    open={editPhoneModalOpen}
-                    onClose={() => setEditPhoneModalOpen(false)}
-                />
-                <Button onClick={handleSubmit}>Создать</Button>
+                {/* <EditPhoneModal open={editPhoneModalOpen} onClose={() => setEditPhoneModalOpen(false)} id={editPhoneModalIndex} /> */}
+                <Button onClick={handleSubmit}>Изменить</Button>
             </ModalDialog>
         </Modal>
     );
-})
+});
 
-export default CreateCompanyModal;
+export default EditCompanyModal;

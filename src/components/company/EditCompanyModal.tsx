@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Modal, ModalDialog, ModalClose, Sheet, Button, FormControl, Option, FormLabel, Input, AccordionGroup, accordionDetailsClasses, accordionSummaryClasses, Accordion, AccordionSummary, Avatar, ListItemContent, Typography, AccordionDetails, List, ListItem, ListSubheader, ListItemButton, Stack, Select, Checkbox, Box, FormHelperText, Grid, Tooltip, Divider, Chip, IconButton, ListDivider } from '@mui/joy';
 import { CallToAction, Create, Delete, EditNote, MusicNote, PhoneAndroid, TapAndPlay, Timer } from '@mui/icons-material';
 import RecordingsList, { AudioRecorder, UseRecorder, useRecorder } from '../AudioRecorder';
-import { Company, GetCompaniesDocument, useGetSoundFilesAndPhoneListsQuery, useUpdateCompanyMutation } from '../../__generated__/graphql';
+import { Company, GetCompaniesDocument, PhoneList, useGetSoundFilesAndPhoneListsQuery, useUpdateCompanyMutation } from '../../__generated__/graphql';
 import { format } from 'date-fns';
 import CreatePhoneModal from '../phoneList/CreatePhoneModal';
+import EditPhoneModal from '../phoneList/EditPhoneModal';
 
 interface EditCompanyModalProps {
     id: number;
@@ -644,7 +645,12 @@ const EditCompanyModal: React.FC<EditCompanyModalProps> = (({ id, companies, ope
                     open={createPhoneModalOpen}
                     onClose={() => setCreatePhoneModalOpen(false)}
                 />
-                {/* <EditPhoneModal open={editPhoneModalOpen} onClose={() => setEditPhoneModalOpen(false)} id={editPhoneModalIndex} /> */}
+                <EditPhoneModal
+                    id={editPhoneModalIndex}
+                    phoneLists={phoneLists as PhoneList[]}
+                    open={editPhoneModalOpen}
+                    onClose={() => setEditPhoneModalOpen(false)}
+                />
                 <Button onClick={handleSubmit}>Изменить</Button>
             </ModalDialog>
         </Modal>

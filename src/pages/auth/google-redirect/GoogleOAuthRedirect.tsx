@@ -10,6 +10,8 @@ const GoogleOAuthRedirect = () => {
 
     useEffect(() => {
         const jwtUser = params.get('jwtUser');
+        console.log(jwtUser);
+        
         if (jwtUser) {
             const userFromJwt: UserDef = jwtDecode(jwtUser);
             userFromJwt && setUser(userFromJwt);

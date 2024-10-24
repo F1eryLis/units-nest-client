@@ -50,6 +50,21 @@ export type CreateCompanyInput = {
   userId: Scalars['Int']['input'];
 };
 
+export type CreateKanbanCardInput = {
+  columnId: Scalars['Int']['input'];
+  comment?: InputMaybe<Scalars['String']['input']>;
+  companyName?: InputMaybe<Scalars['String']['input']>;
+  dateTime?: InputMaybe<Scalars['DateTime']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber: Scalars['String']['input'];
+  task?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateKanbanColumnInput = {
+  title: Scalars['String']['input'];
+  titleColor?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CreatePhonelistInput = {
   /** Name of the phone list */
   name: Scalars['String']['input'];
@@ -71,17 +86,43 @@ export type CreateUserInput = {
   picture?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type KanbanCard = {
+  __typename?: 'KanbanCard';
+  columnId: Scalars['Int']['output'];
+  comment: Scalars['String']['output'];
+  companyName: Scalars['String']['output'];
+  dateTime: Scalars['DateTime']['output'];
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  phoneNumber: Scalars['String']['output'];
+  task: Scalars['String']['output'];
+};
+
+export type KanbanColumn = {
+  __typename?: 'KanbanColumn';
+  id: Scalars['Int']['output'];
+  kanbanCards: Array<KanbanCard>;
+  title: Scalars['String']['output'];
+  titleColor: Scalars['String']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createCompany: Company;
+  createKanbanCard: KanbanCard;
+  createKanbanColumn: KanbanColumn;
   createPhonelist: PhoneList;
   createSoundfile: SoundFile;
   createUser: User;
   removeCompany: Company;
+  removeKanbanCard: KanbanCard;
+  removeKanbanColumn: KanbanColumn;
   removePhonelist: PhoneList;
   removeSoundfile: SoundFile;
   removeUser: User;
   updateCompany: Company;
+  updateKanbanCard: KanbanCard;
+  updateKanbanColumn: KanbanColumn;
   updatePhonelist: PhoneList;
   updateSoundfile: SoundFile;
   updateUser: User;
@@ -90,6 +131,16 @@ export type Mutation = {
 
 export type MutationCreateCompanyArgs = {
   createCompanyInput: CreateCompanyInput;
+};
+
+
+export type MutationCreateKanbanCardArgs = {
+  createKanbanCardInput: CreateKanbanCardInput;
+};
+
+
+export type MutationCreateKanbanColumnArgs = {
+  createKanbanColumnInput: CreateKanbanColumnInput;
 };
 
 
@@ -113,6 +164,16 @@ export type MutationRemoveCompanyArgs = {
 };
 
 
+export type MutationRemoveKanbanCardArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationRemoveKanbanColumnArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
 export type MutationRemovePhonelistArgs = {
   id: Scalars['Int']['input'];
 };
@@ -130,6 +191,16 @@ export type MutationRemoveUserArgs = {
 
 export type MutationUpdateCompanyArgs = {
   updateCompanyInput: UpdateCompanyInput;
+};
+
+
+export type MutationUpdateKanbanCardArgs = {
+  updateKanbanCardInput: UpdateKanbanCardInput;
+};
+
+
+export type MutationUpdateKanbanColumnArgs = {
+  updateKanbanColumnInput: UpdateKanbanColumnInput;
 };
 
 
@@ -161,6 +232,10 @@ export type Query = {
   __typename?: 'Query';
   companies: Array<Company>;
   company: Company;
+  kanbanCard: KanbanCard;
+  kanbanCards: Array<KanbanCard>;
+  kanbanColumn: KanbanColumn;
+  kanbanColumns: Array<KanbanColumn>;
   phonelist: PhoneList;
   phonelists: Array<PhoneList>;
   soundfile: SoundFile;
@@ -171,6 +246,16 @@ export type Query = {
 
 
 export type QueryCompanyArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryKanbanCardArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryKanbanColumnArgs = {
   id: Scalars['Int']['input'];
 };
 
@@ -212,6 +297,23 @@ export type UpdateCompanyInput = {
   startTime?: InputMaybe<Scalars['DateTime']['input']>;
   status?: InputMaybe<Scalars['Int']['input']>;
   userId?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type UpdateKanbanCardInput = {
+  columnId?: InputMaybe<Scalars['Int']['input']>;
+  comment?: InputMaybe<Scalars['String']['input']>;
+  companyName?: InputMaybe<Scalars['String']['input']>;
+  dateTime?: InputMaybe<Scalars['DateTime']['input']>;
+  id: Scalars['Int']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  phoneNumber?: InputMaybe<Scalars['String']['input']>;
+  task?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateKanbanColumnInput = {
+  id: Scalars['Int']['input'];
+  title?: InputMaybe<Scalars['String']['input']>;
+  titleColor?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdatePhonelistInput = {
@@ -334,6 +436,30 @@ export type GetUserQueryVariables = Exact<{
 
 
 export type GetUserQuery = { __typename?: 'Query', user: { __typename?: 'User', id: number, email: string, fullName: string, picture?: string | null } };
+
+export type GetKanbanColumnsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetKanbanColumnsQuery = { __typename?: 'Query', kanbanColumns: Array<{ __typename?: 'KanbanColumn', id: number, title: string, titleColor: string, kanbanCards: Array<{ __typename?: 'KanbanCard', id: number, name: string, companyName: string, phoneNumber: string, comment: string, task: string, dateTime: any, columnId: number }> }> };
+
+export type GetKanbanCardsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetKanbanCardsQuery = { __typename?: 'Query', kanbanCards: Array<{ __typename?: 'KanbanCard', id: number, name: string, companyName: string, phoneNumber: string, comment: string, task: string, dateTime: any, columnId: number }> };
+
+export type GetKanbanCardQueryVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type GetKanbanCardQuery = { __typename?: 'Query', kanbanCard: { __typename?: 'KanbanCard', id: number, name: string, companyName: string, phoneNumber: string, comment: string, task: string, dateTime: any, columnId: number } };
+
+export type UpdateKanbanCardMutationVariables = Exact<{
+  input: UpdateKanbanCardInput;
+}>;
+
+
+export type UpdateKanbanCardMutation = { __typename?: 'Mutation', updateKanbanCard: { __typename?: 'KanbanCard', name: string, companyName: string, phoneNumber: string, comment: string, task: string, dateTime: any, columnId: number } };
 
 
 export const GetCompaniesDocument = gql`
@@ -895,3 +1021,186 @@ export type GetUserQueryHookResult = ReturnType<typeof useGetUserQuery>;
 export type GetUserLazyQueryHookResult = ReturnType<typeof useGetUserLazyQuery>;
 export type GetUserSuspenseQueryHookResult = ReturnType<typeof useGetUserSuspenseQuery>;
 export type GetUserQueryResult = Apollo.QueryResult<GetUserQuery, GetUserQueryVariables>;
+export const GetKanbanColumnsDocument = gql`
+    query GetKanbanColumns {
+  kanbanColumns {
+    id
+    title
+    titleColor
+    kanbanCards {
+      id
+      name
+      companyName
+      phoneNumber
+      comment
+      task
+      dateTime
+      columnId
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetKanbanColumnsQuery__
+ *
+ * To run a query within a React component, call `useGetKanbanColumnsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetKanbanColumnsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetKanbanColumnsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetKanbanColumnsQuery(baseOptions?: Apollo.QueryHookOptions<GetKanbanColumnsQuery, GetKanbanColumnsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetKanbanColumnsQuery, GetKanbanColumnsQueryVariables>(GetKanbanColumnsDocument, options);
+      }
+export function useGetKanbanColumnsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetKanbanColumnsQuery, GetKanbanColumnsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetKanbanColumnsQuery, GetKanbanColumnsQueryVariables>(GetKanbanColumnsDocument, options);
+        }
+export function useGetKanbanColumnsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetKanbanColumnsQuery, GetKanbanColumnsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetKanbanColumnsQuery, GetKanbanColumnsQueryVariables>(GetKanbanColumnsDocument, options);
+        }
+export type GetKanbanColumnsQueryHookResult = ReturnType<typeof useGetKanbanColumnsQuery>;
+export type GetKanbanColumnsLazyQueryHookResult = ReturnType<typeof useGetKanbanColumnsLazyQuery>;
+export type GetKanbanColumnsSuspenseQueryHookResult = ReturnType<typeof useGetKanbanColumnsSuspenseQuery>;
+export type GetKanbanColumnsQueryResult = Apollo.QueryResult<GetKanbanColumnsQuery, GetKanbanColumnsQueryVariables>;
+export const GetKanbanCardsDocument = gql`
+    query GetKanbanCards {
+  kanbanCards {
+    id
+    name
+    companyName
+    phoneNumber
+    comment
+    task
+    dateTime
+    columnId
+  }
+}
+    `;
+
+/**
+ * __useGetKanbanCardsQuery__
+ *
+ * To run a query within a React component, call `useGetKanbanCardsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetKanbanCardsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetKanbanCardsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetKanbanCardsQuery(baseOptions?: Apollo.QueryHookOptions<GetKanbanCardsQuery, GetKanbanCardsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetKanbanCardsQuery, GetKanbanCardsQueryVariables>(GetKanbanCardsDocument, options);
+      }
+export function useGetKanbanCardsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetKanbanCardsQuery, GetKanbanCardsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetKanbanCardsQuery, GetKanbanCardsQueryVariables>(GetKanbanCardsDocument, options);
+        }
+export function useGetKanbanCardsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetKanbanCardsQuery, GetKanbanCardsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetKanbanCardsQuery, GetKanbanCardsQueryVariables>(GetKanbanCardsDocument, options);
+        }
+export type GetKanbanCardsQueryHookResult = ReturnType<typeof useGetKanbanCardsQuery>;
+export type GetKanbanCardsLazyQueryHookResult = ReturnType<typeof useGetKanbanCardsLazyQuery>;
+export type GetKanbanCardsSuspenseQueryHookResult = ReturnType<typeof useGetKanbanCardsSuspenseQuery>;
+export type GetKanbanCardsQueryResult = Apollo.QueryResult<GetKanbanCardsQuery, GetKanbanCardsQueryVariables>;
+export const GetKanbanCardDocument = gql`
+    query GetKanbanCard($id: Int!) {
+  kanbanCard(id: $id) {
+    id
+    name
+    companyName
+    phoneNumber
+    comment
+    task
+    dateTime
+    columnId
+  }
+}
+    `;
+
+/**
+ * __useGetKanbanCardQuery__
+ *
+ * To run a query within a React component, call `useGetKanbanCardQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetKanbanCardQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetKanbanCardQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetKanbanCardQuery(baseOptions: Apollo.QueryHookOptions<GetKanbanCardQuery, GetKanbanCardQueryVariables> & ({ variables: GetKanbanCardQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetKanbanCardQuery, GetKanbanCardQueryVariables>(GetKanbanCardDocument, options);
+      }
+export function useGetKanbanCardLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetKanbanCardQuery, GetKanbanCardQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetKanbanCardQuery, GetKanbanCardQueryVariables>(GetKanbanCardDocument, options);
+        }
+export function useGetKanbanCardSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetKanbanCardQuery, GetKanbanCardQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetKanbanCardQuery, GetKanbanCardQueryVariables>(GetKanbanCardDocument, options);
+        }
+export type GetKanbanCardQueryHookResult = ReturnType<typeof useGetKanbanCardQuery>;
+export type GetKanbanCardLazyQueryHookResult = ReturnType<typeof useGetKanbanCardLazyQuery>;
+export type GetKanbanCardSuspenseQueryHookResult = ReturnType<typeof useGetKanbanCardSuspenseQuery>;
+export type GetKanbanCardQueryResult = Apollo.QueryResult<GetKanbanCardQuery, GetKanbanCardQueryVariables>;
+export const UpdateKanbanCardDocument = gql`
+    mutation UpdateKanbanCard($input: UpdateKanbanCardInput!) {
+  updateKanbanCard(updateKanbanCardInput: $input) {
+    name
+    companyName
+    phoneNumber
+    comment
+    task
+    dateTime
+    columnId
+  }
+}
+    `;
+export type UpdateKanbanCardMutationFn = Apollo.MutationFunction<UpdateKanbanCardMutation, UpdateKanbanCardMutationVariables>;
+
+/**
+ * __useUpdateKanbanCardMutation__
+ *
+ * To run a mutation, you first call `useUpdateKanbanCardMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateKanbanCardMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateKanbanCardMutation, { data, loading, error }] = useUpdateKanbanCardMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateKanbanCardMutation(baseOptions?: Apollo.MutationHookOptions<UpdateKanbanCardMutation, UpdateKanbanCardMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateKanbanCardMutation, UpdateKanbanCardMutationVariables>(UpdateKanbanCardDocument, options);
+      }
+export type UpdateKanbanCardMutationHookResult = ReturnType<typeof useUpdateKanbanCardMutation>;
+export type UpdateKanbanCardMutationResult = Apollo.MutationResult<UpdateKanbanCardMutation>;
+export type UpdateKanbanCardMutationOptions = Apollo.BaseMutationOptions<UpdateKanbanCardMutation, UpdateKanbanCardMutationVariables>;

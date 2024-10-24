@@ -147,3 +147,59 @@ query GetUser($id: Int!) {
         picture
     }
 }
+
+query GetKanbanColumns {
+    kanbanColumns {
+        id
+        title
+        titleColor
+        kanbanCards {
+            id
+            name
+            companyName
+            phoneNumber
+            comment
+            task
+            dateTime
+            columnId
+        }
+    }
+}
+
+query GetKanbanCards {
+    kanbanCards {
+        id
+        name
+        companyName
+        phoneNumber
+        comment
+        task
+        dateTime
+        columnId
+    }
+}
+
+query GetKanbanCard($id: Int!) {
+    kanbanCard(id: $id) {
+        id
+        name
+        companyName
+        phoneNumber
+        comment
+        task
+        dateTime
+        columnId
+    }
+}
+
+mutation UpdateKanbanCard($input: UpdateKanbanCardInput!) {
+    updateKanbanCard(updateKanbanCardInput: $input) {
+        name
+        companyName
+        phoneNumber
+        comment
+        task
+        dateTime
+        columnId
+    }
+}

@@ -5,6 +5,7 @@ import GoogleOAuthRedirect from "./pages/auth/google-redirect/GoogleOAuthRedirec
 import ProtectedRoute from "./pages/auth/components/ProtectedRoute";
 import MainLayout from "./layout/MainLayout";
 import DashboardPage from "./pages/DashboardPage";
+import CRMPage from "./pages/CRMPage";
 
 function App() {
   return (
@@ -14,6 +15,10 @@ function App() {
           <Route
             path="/"
             element={<ProtectedRoute children={<DashboardPage />} />}
+          />
+          <Route
+            path="/crm"
+            element={<ProtectedRoute children={<CRMPage />} />}
           />
 
           <Route

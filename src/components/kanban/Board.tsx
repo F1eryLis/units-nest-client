@@ -5,7 +5,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { Button, IconButton, Sheet, Stack } from '@mui/joy';
 import { Add } from '@mui/icons-material';
-import { useGetKanbanColumnsQuery } from '../../__generated__/graphql';
+import { OnKanbanCardAddedDocument, useGetKanbanColumnsQuery } from '../../__generated__/graphql';
 // import TableColumn from './TableColumn';
 // import CreateColumnModal from './modals/CreateColumnModal';
 

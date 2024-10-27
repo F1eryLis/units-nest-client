@@ -284,6 +284,11 @@ export type SoundFile = {
   userId: Scalars['Int']['output'];
 };
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  kanbanCardAdded: KanbanCard;
+};
+
 export type UpdateCompanyInput = {
   companyLimit?: InputMaybe<Scalars['Int']['input']>;
   dayLimit?: InputMaybe<Scalars['Int']['input']>;
@@ -437,6 +442,8 @@ export type GetUserQueryVariables = Exact<{
 
 export type GetUserQuery = { __typename?: 'Query', user: { __typename?: 'User', id: number, email: string, fullName: string, picture?: string | null } };
 
+export type KanbanCardDetailsFragment = { __typename?: 'KanbanCard', id: number, name: string, companyName: string, phoneNumber: string, comment: string, task: string, dateTime: any, columnId: number };
+
 export type GetKanbanColumnsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -461,7 +468,23 @@ export type UpdateKanbanCardMutationVariables = Exact<{
 
 export type UpdateKanbanCardMutation = { __typename?: 'Mutation', updateKanbanCard: { __typename?: 'KanbanCard', name: string, companyName: string, phoneNumber: string, comment: string, task: string, dateTime: any, columnId: number } };
 
+export type OnKanbanCardAddedSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
+
+export type OnKanbanCardAddedSubscription = { __typename?: 'Subscription', kanbanCardAdded: { __typename?: 'KanbanCard', columnId: number } };
+
+export const KanbanCardDetailsFragmentDoc = gql`
+    fragment KanbanCardDetails on KanbanCard {
+  id
+  name
+  companyName
+  phoneNumber
+  comment
+  task
+  dateTime
+  columnId
+}
+    `;
 export const GetCompaniesDocument = gql`
     query GetCompanies {
   companies {
@@ -1028,18 +1051,11 @@ export const GetKanbanColumnsDocument = gql`
     title
     titleColor
     kanbanCards {
-      id
-      name
-      companyName
-      phoneNumber
-      comment
-      task
-      dateTime
-      columnId
+      ...KanbanCardDetails
     }
   }
 }
-    `;
+    ${KanbanCardDetailsFragmentDoc}`;
 
 /**
  * __useGetKanbanColumnsQuery__
@@ -1204,3 +1220,32 @@ export function useUpdateKanbanCardMutation(baseOptions?: Apollo.MutationHookOpt
 export type UpdateKanbanCardMutationHookResult = ReturnType<typeof useUpdateKanbanCardMutation>;
 export type UpdateKanbanCardMutationResult = Apollo.MutationResult<UpdateKanbanCardMutation>;
 export type UpdateKanbanCardMutationOptions = Apollo.BaseMutationOptions<UpdateKanbanCardMutation, UpdateKanbanCardMutationVariables>;
+export const OnKanbanCardAddedDocument = gql`
+    subscription OnKanbanCardAdded {
+  kanbanCardAdded {
+    columnId
+  }
+}
+    `;
+
+/**
+ * __useOnKanbanCardAddedSubscription__
+ *
+ * To run a query within a React component, call `useOnKanbanCardAddedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useOnKanbanCardAddedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOnKanbanCardAddedSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useOnKanbanCardAddedSubscription(baseOptions?: Apollo.SubscriptionHookOptions<OnKanbanCardAddedSubscription, OnKanbanCardAddedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<OnKanbanCardAddedSubscription, OnKanbanCardAddedSubscriptionVariables>(OnKanbanCardAddedDocument, options);
+      }
+export type OnKanbanCardAddedSubscriptionHookResult = ReturnType<typeof useOnKanbanCardAddedSubscription>;
+export type OnKanbanCardAddedSubscriptionResult = Apollo.SubscriptionResult<OnKanbanCardAddedSubscription>;

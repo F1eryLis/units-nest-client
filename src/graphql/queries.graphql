@@ -148,20 +148,24 @@ query GetUser($id: Int!) {
     }
 }
 
+fragment KanbanCardDetails on KanbanCard {
+    id
+    name
+    companyName
+    phoneNumber
+    comment
+    task
+    dateTime
+    columnId
+}
+
 query GetKanbanColumns {
     kanbanColumns {
         id
         title
         titleColor
         kanbanCards {
-            id
-            name
-            companyName
-            phoneNumber
-            comment
-            task
-            dateTime
-            columnId
+            ...KanbanCardDetails
         }
     }
 }
@@ -200,6 +204,12 @@ mutation UpdateKanbanCard($input: UpdateKanbanCardInput!) {
         comment
         task
         dateTime
+        columnId
+    }
+}
+
+subscription OnKanbanCardAdded {
+    kanbanCardAdded {
         columnId
     }
 }

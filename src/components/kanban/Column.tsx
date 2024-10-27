@@ -4,7 +4,7 @@ import Task from './Task';
 import { useDrop } from 'react-dnd';
 // import CreateTaskModal from '../modals/CreateTaskModal';
 import { Add, Check, Close, Delete, Edit } from '@mui/icons-material';
-import { GetKanbanCardsDocument, GetKanbanColumnsDocument, KanbanColumn, useUpdateKanbanCardMutation } from '../../__generated__/graphql';
+import { GetKanbanCardsDocument, GetKanbanColumnsDocument, KanbanColumn, useOnKanbanCardAddedSubscription, useUpdateKanbanCardMutation } from '../../__generated__/graphql';
 
 interface ColumnProps {
     column: KanbanColumn;
@@ -22,6 +22,10 @@ const Column: FC<ColumnProps> = ({ column, setIsDraggingBoard }) => {
     // const [allTasksLoaded, setAllTasksLoaded] = useState(false);
 
     const [moveTask] = useUpdateKanbanCardMutation();
+    // const { data } = useOnKanbanCardAddedSubscription();
+
+    // console.log(data?.kanbanCardAdded);
+    
 
     // useEffect(() => {
     //     const observer = new IntersectionObserver(
@@ -58,12 +62,12 @@ const Column: FC<ColumnProps> = ({ column, setIsDraggingBoard }) => {
                             columnId: column.id,
                         }
                     },
-                    refetchQueries: [{
-                        query: GetKanbanColumnsDocument,
+                    // refetchQueries: [{
+                    //     query: GetKanbanColumnsDocument,
                         // variables: {
                         //     columnId: column.id,
                         // },
-                    }],
+                    // }],
                 });
                 item.columnId = column.id;
             }

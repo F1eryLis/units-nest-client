@@ -6,6 +6,7 @@ import ProtectedRoute from "./pages/auth/components/ProtectedRoute";
 import MainLayout from "./layout/MainLayout";
 import DashboardPage from "./pages/DashboardPage";
 import CRMPage from "./pages/CRMPage";
+import EditCardPage from "./pages/EditCardPage";
 
 function App() {
   return (
@@ -19,6 +20,10 @@ function App() {
           <Route
             path="/crm"
             element={<ProtectedRoute children={<CRMPage />} />}
+          />
+          <Route
+            path="/crm/edit-card/:taskId"
+            element={<ProtectedRoute children={<EditCardPage />} />}
           />
 
           <Route

@@ -5,13 +5,83 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { Button, IconButton, Sheet, Stack } from '@mui/joy';
 import { Add } from '@mui/icons-material';
-import { OnKanbanCardAddedDocument, useGetKanbanColumnsQuery } from '../../__generated__/graphql';
+import { OnKanbanCardCreateDocument, OnKanbanCardCreateSubscription, OnKanbanCardCreateSubscriptionVariables, OnKanbanCardUpdatedDocument, OnKanbanCardUpdatedSubscription, OnKanbanCardUpdatedSubscriptionVariables, useGetKanbanColumnsQuery } from '../../__generated__/graphql';
 // import TableColumn from './TableColumn';
-// import CreateColumnModal from './modals/CreateColumnModal';
+import CreateColumnModal from './CreateColumnModal';
 
 const Board: React.FC = () => {
-    const { data } = useGetKanbanColumnsQuery();
+    const { data, subscribeToMore } = useGetKanbanColumnsQuery();
     const columns = data?.kanbanColumns || [];
+
+    useEffect(() => {
+        if (!data) return;
+
+        const unsubscribeToUpdate = data.kanbanColumns.map(column =>
+            subscribeToMore<OnKanbanCardUpdatedSubscription, OnKanbanCardUpdatedSubscriptionVariables>({
+                document: OnKanbanCardUpdatedDocument,
+                variables: { columnId: column.id },
+                updateQuery: (prev, { subscriptionData }) => {
+                    if (!subscriptionData.data) return prev;
+
+                    const updatedCard = subscriptionData.data.kanbanCardUpdated;
+                    if (!updatedCard) return prev;
+
+                    return {
+                        ...prev,
+                        kanbanColumns: prev.kanbanColumns.map((col) => {
+                            if (col.id === updatedCard.columnId) {
+                                const existingCard = col.kanbanCards.find((card) => card.id === updatedCard.id);
+
+                                return {
+                                    ...col,
+                                    kanbanCards: existingCard
+                                        ? col.kanbanCards.map((card) =>
+                                            card.id === updatedCard.id ? updatedCard : card
+                                        )
+                                        : [...col.kanbanCards, updatedCard],
+                                };
+                            }
+
+                            return {
+                                ...col,
+                                kanbanCards: col.kanbanCards.filter((card) => card.id !== updatedCard.id),
+                            };
+                        }),
+                    };
+                },
+                onError: (error) => {
+                    console.error(error);
+                }
+            })
+        );
+
+        const unsubscribeToCreate = subscribeToMore<OnKanbanCardCreateSubscription, OnKanbanCardCreateSubscriptionVariables>({
+            document: OnKanbanCardCreateDocument,
+            updateQuery: (prev, { subscriptionData }) => {
+                if (!subscriptionData.data) return prev;
+
+                const newCard = subscriptionData.data.kanbanCardCreate;
+                if (!newCard) return prev;
+
+                return {
+                    ...prev,
+                    kanbanColumns: prev.kanbanColumns.map((col) =>
+                        col.id === newCard.columnId
+                            ? {
+                                ...col,
+                                kanbanCards: [...col.kanbanCards, newCard],
+                            }
+                            : col,
+                    ),
+                };
+            },
+        });
+
+        return () => {
+            unsubscribeToUpdate?.forEach(unsubscribe => unsubscribe());
+            unsubscribeToCreate();
+        }
+    }, [data, subscribeToMore]);
 
     const [openCreateColumnModal, setOpenCreateColumnModal] = useState<boolean>(false);
     const [isDraggingBoard, setIsDraggingBoard] = useState(false);
@@ -94,7 +164,7 @@ const Board: React.FC = () => {
                                     minWidth: '300px',
                                     padding: '16px',
                                     borderRadius: '4px',
-                                    minHeight: '250px',
+                                    maxHeight: '250px',
                                     my: 2,
                                 }}
                             >
@@ -138,10 +208,10 @@ const Board: React.FC = () => {
                         </Stack>
                     )
             }
-            {/* <CreateColumnModal
+            <CreateColumnModal
                 open={openCreateColumnModal}
                 onClose={() => setOpenCreateColumnModal(false)}
-            /> */}
+            />
         </DndProvider>
     );
 };

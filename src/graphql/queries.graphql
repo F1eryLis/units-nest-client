@@ -50,18 +50,18 @@ mutation CreateCompany($input: CreateCompanyInput!) {
 
 mutation UpdateCompany($input: UpdateCompanyInput!) {
     updateCompany(updateCompanyInput: $input) {
-    name
-    companyLimit
-    dayLimit
-    status
-    startTime
-    endTime
-    days
-    reaction
-    soundFileId
-    phonesId
-    userId
-  }
+        name
+        companyLimit
+        dayLimit
+        status
+        startTime
+        endTime
+        days
+        reaction
+        soundFileId
+        phonesId
+        userId
+    }
 }
 
 query GetPhoneLists {
@@ -170,6 +170,22 @@ query GetKanbanColumns {
     }
 }
 
+mutation CreateKanbanColumn($createKanbanColumnInput: CreateKanbanColumnInput!) {
+    createKanbanColumn(createKanbanColumnInput: $createKanbanColumnInput) {
+        id
+        title
+        titleColor
+    }
+}
+
+mutation UpdateKanbanColumn($updateKanbanColumnInput: UpdateKanbanColumnInput!) {
+    updateKanbanColumn(updateKanbanColumnInput: $updateKanbanColumnInput) {
+        id
+        title
+        titleColor
+    }
+}
+
 query GetKanbanCards {
     kanbanCards {
         id
@@ -208,8 +224,34 @@ mutation UpdateKanbanCard($input: UpdateKanbanCardInput!) {
     }
 }
 
-subscription OnKanbanCardAdded {
-    kanbanCardAdded {
+mutation CreateKanbanCard($createKanbanCardInput: CreateKanbanCardInput!) {
+    createKanbanCard(createKanbanCardInput: $createKanbanCardInput) {
+        id
+        name
+        companyName
+        phoneNumber
+        comment
+        task
+        dateTime
         columnId
+    }
+}
+
+subscription OnKanbanCardCreate {
+    kanbanCardCreate {
+        id
+        name
+        companyName
+        phoneNumber
+        comment
+        task
+        dateTime
+        columnId
+    }
+}
+
+subscription OnKanbanCardUpdated($columnId: Int!) {
+    kanbanCardUpdated(columnId: $columnId) {
+        ...KanbanCardDetails
     }
 }

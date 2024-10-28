@@ -286,7 +286,13 @@ export type SoundFile = {
 
 export type Subscription = {
   __typename?: 'Subscription';
-  kanbanCardAdded: KanbanCard;
+  kanbanCardCreate: KanbanCard;
+  kanbanCardUpdated: KanbanCard;
+};
+
+
+export type SubscriptionKanbanCardUpdatedArgs = {
+  columnId: Scalars['Int']['input'];
 };
 
 export type UpdateCompanyInput = {
@@ -449,6 +455,20 @@ export type GetKanbanColumnsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetKanbanColumnsQuery = { __typename?: 'Query', kanbanColumns: Array<{ __typename?: 'KanbanColumn', id: number, title: string, titleColor: string, kanbanCards: Array<{ __typename?: 'KanbanCard', id: number, name: string, companyName: string, phoneNumber: string, comment: string, task: string, dateTime: any, columnId: number }> }> };
 
+export type CreateKanbanColumnMutationVariables = Exact<{
+  createKanbanColumnInput: CreateKanbanColumnInput;
+}>;
+
+
+export type CreateKanbanColumnMutation = { __typename?: 'Mutation', createKanbanColumn: { __typename?: 'KanbanColumn', id: number, title: string, titleColor: string } };
+
+export type UpdateKanbanColumnMutationVariables = Exact<{
+  updateKanbanColumnInput: UpdateKanbanColumnInput;
+}>;
+
+
+export type UpdateKanbanColumnMutation = { __typename?: 'Mutation', updateKanbanColumn: { __typename?: 'KanbanColumn', id: number, title: string, titleColor: string } };
+
 export type GetKanbanCardsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -468,10 +488,24 @@ export type UpdateKanbanCardMutationVariables = Exact<{
 
 export type UpdateKanbanCardMutation = { __typename?: 'Mutation', updateKanbanCard: { __typename?: 'KanbanCard', name: string, companyName: string, phoneNumber: string, comment: string, task: string, dateTime: any, columnId: number } };
 
-export type OnKanbanCardAddedSubscriptionVariables = Exact<{ [key: string]: never; }>;
+export type CreateKanbanCardMutationVariables = Exact<{
+  createKanbanCardInput: CreateKanbanCardInput;
+}>;
 
 
-export type OnKanbanCardAddedSubscription = { __typename?: 'Subscription', kanbanCardAdded: { __typename?: 'KanbanCard', columnId: number } };
+export type CreateKanbanCardMutation = { __typename?: 'Mutation', createKanbanCard: { __typename?: 'KanbanCard', id: number, name: string, companyName: string, phoneNumber: string, comment: string, task: string, dateTime: any, columnId: number } };
+
+export type OnKanbanCardCreateSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type OnKanbanCardCreateSubscription = { __typename?: 'Subscription', kanbanCardCreate: { __typename?: 'KanbanCard', id: number, name: string, companyName: string, phoneNumber: string, comment: string, task: string, dateTime: any, columnId: number } };
+
+export type OnKanbanCardUpdatedSubscriptionVariables = Exact<{
+  columnId: Scalars['Int']['input'];
+}>;
+
+
+export type OnKanbanCardUpdatedSubscription = { __typename?: 'Subscription', kanbanCardUpdated: { __typename?: 'KanbanCard', id: number, name: string, companyName: string, phoneNumber: string, comment: string, task: string, dateTime: any, columnId: number } };
 
 export const KanbanCardDetailsFragmentDoc = gql`
     fragment KanbanCardDetails on KanbanCard {
@@ -1088,6 +1122,76 @@ export type GetKanbanColumnsQueryHookResult = ReturnType<typeof useGetKanbanColu
 export type GetKanbanColumnsLazyQueryHookResult = ReturnType<typeof useGetKanbanColumnsLazyQuery>;
 export type GetKanbanColumnsSuspenseQueryHookResult = ReturnType<typeof useGetKanbanColumnsSuspenseQuery>;
 export type GetKanbanColumnsQueryResult = Apollo.QueryResult<GetKanbanColumnsQuery, GetKanbanColumnsQueryVariables>;
+export const CreateKanbanColumnDocument = gql`
+    mutation CreateKanbanColumn($createKanbanColumnInput: CreateKanbanColumnInput!) {
+  createKanbanColumn(createKanbanColumnInput: $createKanbanColumnInput) {
+    id
+    title
+    titleColor
+  }
+}
+    `;
+export type CreateKanbanColumnMutationFn = Apollo.MutationFunction<CreateKanbanColumnMutation, CreateKanbanColumnMutationVariables>;
+
+/**
+ * __useCreateKanbanColumnMutation__
+ *
+ * To run a mutation, you first call `useCreateKanbanColumnMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateKanbanColumnMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createKanbanColumnMutation, { data, loading, error }] = useCreateKanbanColumnMutation({
+ *   variables: {
+ *      createKanbanColumnInput: // value for 'createKanbanColumnInput'
+ *   },
+ * });
+ */
+export function useCreateKanbanColumnMutation(baseOptions?: Apollo.MutationHookOptions<CreateKanbanColumnMutation, CreateKanbanColumnMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateKanbanColumnMutation, CreateKanbanColumnMutationVariables>(CreateKanbanColumnDocument, options);
+      }
+export type CreateKanbanColumnMutationHookResult = ReturnType<typeof useCreateKanbanColumnMutation>;
+export type CreateKanbanColumnMutationResult = Apollo.MutationResult<CreateKanbanColumnMutation>;
+export type CreateKanbanColumnMutationOptions = Apollo.BaseMutationOptions<CreateKanbanColumnMutation, CreateKanbanColumnMutationVariables>;
+export const UpdateKanbanColumnDocument = gql`
+    mutation UpdateKanbanColumn($updateKanbanColumnInput: UpdateKanbanColumnInput!) {
+  updateKanbanColumn(updateKanbanColumnInput: $updateKanbanColumnInput) {
+    id
+    title
+    titleColor
+  }
+}
+    `;
+export type UpdateKanbanColumnMutationFn = Apollo.MutationFunction<UpdateKanbanColumnMutation, UpdateKanbanColumnMutationVariables>;
+
+/**
+ * __useUpdateKanbanColumnMutation__
+ *
+ * To run a mutation, you first call `useUpdateKanbanColumnMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateKanbanColumnMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateKanbanColumnMutation, { data, loading, error }] = useUpdateKanbanColumnMutation({
+ *   variables: {
+ *      updateKanbanColumnInput: // value for 'updateKanbanColumnInput'
+ *   },
+ * });
+ */
+export function useUpdateKanbanColumnMutation(baseOptions?: Apollo.MutationHookOptions<UpdateKanbanColumnMutation, UpdateKanbanColumnMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateKanbanColumnMutation, UpdateKanbanColumnMutationVariables>(UpdateKanbanColumnDocument, options);
+      }
+export type UpdateKanbanColumnMutationHookResult = ReturnType<typeof useUpdateKanbanColumnMutation>;
+export type UpdateKanbanColumnMutationResult = Apollo.MutationResult<UpdateKanbanColumnMutation>;
+export type UpdateKanbanColumnMutationOptions = Apollo.BaseMutationOptions<UpdateKanbanColumnMutation, UpdateKanbanColumnMutationVariables>;
 export const GetKanbanCardsDocument = gql`
     query GetKanbanCards {
   kanbanCards {
@@ -1220,32 +1324,109 @@ export function useUpdateKanbanCardMutation(baseOptions?: Apollo.MutationHookOpt
 export type UpdateKanbanCardMutationHookResult = ReturnType<typeof useUpdateKanbanCardMutation>;
 export type UpdateKanbanCardMutationResult = Apollo.MutationResult<UpdateKanbanCardMutation>;
 export type UpdateKanbanCardMutationOptions = Apollo.BaseMutationOptions<UpdateKanbanCardMutation, UpdateKanbanCardMutationVariables>;
-export const OnKanbanCardAddedDocument = gql`
-    subscription OnKanbanCardAdded {
-  kanbanCardAdded {
+export const CreateKanbanCardDocument = gql`
+    mutation CreateKanbanCard($createKanbanCardInput: CreateKanbanCardInput!) {
+  createKanbanCard(createKanbanCardInput: $createKanbanCardInput) {
+    id
+    name
+    companyName
+    phoneNumber
+    comment
+    task
+    dateTime
+    columnId
+  }
+}
+    `;
+export type CreateKanbanCardMutationFn = Apollo.MutationFunction<CreateKanbanCardMutation, CreateKanbanCardMutationVariables>;
+
+/**
+ * __useCreateKanbanCardMutation__
+ *
+ * To run a mutation, you first call `useCreateKanbanCardMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateKanbanCardMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createKanbanCardMutation, { data, loading, error }] = useCreateKanbanCardMutation({
+ *   variables: {
+ *      createKanbanCardInput: // value for 'createKanbanCardInput'
+ *   },
+ * });
+ */
+export function useCreateKanbanCardMutation(baseOptions?: Apollo.MutationHookOptions<CreateKanbanCardMutation, CreateKanbanCardMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateKanbanCardMutation, CreateKanbanCardMutationVariables>(CreateKanbanCardDocument, options);
+      }
+export type CreateKanbanCardMutationHookResult = ReturnType<typeof useCreateKanbanCardMutation>;
+export type CreateKanbanCardMutationResult = Apollo.MutationResult<CreateKanbanCardMutation>;
+export type CreateKanbanCardMutationOptions = Apollo.BaseMutationOptions<CreateKanbanCardMutation, CreateKanbanCardMutationVariables>;
+export const OnKanbanCardCreateDocument = gql`
+    subscription OnKanbanCardCreate {
+  kanbanCardCreate {
+    id
+    name
+    companyName
+    phoneNumber
+    comment
+    task
+    dateTime
     columnId
   }
 }
     `;
 
 /**
- * __useOnKanbanCardAddedSubscription__
+ * __useOnKanbanCardCreateSubscription__
  *
- * To run a query within a React component, call `useOnKanbanCardAddedSubscription` and pass it any options that fit your needs.
- * When your component renders, `useOnKanbanCardAddedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useOnKanbanCardCreateSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useOnKanbanCardCreateSubscription` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useOnKanbanCardAddedSubscription({
+ * const { data, loading, error } = useOnKanbanCardCreateSubscription({
  *   variables: {
  *   },
  * });
  */
-export function useOnKanbanCardAddedSubscription(baseOptions?: Apollo.SubscriptionHookOptions<OnKanbanCardAddedSubscription, OnKanbanCardAddedSubscriptionVariables>) {
+export function useOnKanbanCardCreateSubscription(baseOptions?: Apollo.SubscriptionHookOptions<OnKanbanCardCreateSubscription, OnKanbanCardCreateSubscriptionVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<OnKanbanCardAddedSubscription, OnKanbanCardAddedSubscriptionVariables>(OnKanbanCardAddedDocument, options);
+        return Apollo.useSubscription<OnKanbanCardCreateSubscription, OnKanbanCardCreateSubscriptionVariables>(OnKanbanCardCreateDocument, options);
       }
-export type OnKanbanCardAddedSubscriptionHookResult = ReturnType<typeof useOnKanbanCardAddedSubscription>;
-export type OnKanbanCardAddedSubscriptionResult = Apollo.SubscriptionResult<OnKanbanCardAddedSubscription>;
+export type OnKanbanCardCreateSubscriptionHookResult = ReturnType<typeof useOnKanbanCardCreateSubscription>;
+export type OnKanbanCardCreateSubscriptionResult = Apollo.SubscriptionResult<OnKanbanCardCreateSubscription>;
+export const OnKanbanCardUpdatedDocument = gql`
+    subscription OnKanbanCardUpdated($columnId: Int!) {
+  kanbanCardUpdated(columnId: $columnId) {
+    ...KanbanCardDetails
+  }
+}
+    ${KanbanCardDetailsFragmentDoc}`;
+
+/**
+ * __useOnKanbanCardUpdatedSubscription__
+ *
+ * To run a query within a React component, call `useOnKanbanCardUpdatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useOnKanbanCardUpdatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOnKanbanCardUpdatedSubscription({
+ *   variables: {
+ *      columnId: // value for 'columnId'
+ *   },
+ * });
+ */
+export function useOnKanbanCardUpdatedSubscription(baseOptions: Apollo.SubscriptionHookOptions<OnKanbanCardUpdatedSubscription, OnKanbanCardUpdatedSubscriptionVariables> & ({ variables: OnKanbanCardUpdatedSubscriptionVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<OnKanbanCardUpdatedSubscription, OnKanbanCardUpdatedSubscriptionVariables>(OnKanbanCardUpdatedDocument, options);
+      }
+export type OnKanbanCardUpdatedSubscriptionHookResult = ReturnType<typeof useOnKanbanCardUpdatedSubscription>;
+export type OnKanbanCardUpdatedSubscriptionResult = Apollo.SubscriptionResult<OnKanbanCardUpdatedSubscription>;

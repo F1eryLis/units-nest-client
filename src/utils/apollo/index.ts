@@ -11,6 +11,36 @@ const httpLink = new HttpLink({
 
 const wsLink = new GraphQLWsLink(createClient({
     url: 'ws://localhost:3000/graphql',
+    retryAttempts: 5,
+    connectionAckWaitTimeout: 2000,
+    retryWait: async function waitForServerHealthyBeforeRetry(retryAttempts) {
+        if (retryAttempts >= 4) {
+            console.debug(`socket:DISCONNECTED ${new Date()}`);
+        }
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+    },
+    shouldRetry: (errOrCloseEvent) => {
+        console.log("errOrCloseEvent", errOrCloseEvent);
+        return true;
+    },
+    lazy: true,
+    keepAlive: 1000,
+    on: {
+        error: (errors) => {
+            console.error(`ERROR: ${JSON.stringify(errors)}`);
+        },
+        connected: () => {
+            console.log(`socket:CONNECTED ${new Date()}`);
+        },
+        closed: (reason) => {
+            console.log(`socket:CLOSED ${new Date()}`);
+        },
+        connecting: () => {
+            console.log(`socket:CONNECTING ${new Date()}`);
+        },
+        ping: async () => { },
+        pong: async () => { }
+    }
 }));
 
 const splitLink = split(

@@ -1,10 +1,10 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { Button, Typography, Box, Sheet, Stack, IconButton, Modal, ModalDialog, ButtonGroup, Input } from '@mui/joy';
 import Task from './Task';
 import { useDrop } from 'react-dnd';
-// import CreateTaskModal from '../modals/CreateTaskModal';
+import CreateCardModal from './CreateCardModal';
 import { Add, Check, Close, Delete, Edit } from '@mui/icons-material';
-import { GetKanbanCardsDocument, GetKanbanColumnsDocument, KanbanColumn, useOnKanbanCardAddedSubscription, useUpdateKanbanCardMutation } from '../../__generated__/graphql';
+import { KanbanColumn, useUpdateKanbanCardMutation, useUpdateKanbanColumnMutation } from '../../__generated__/graphql';
 
 interface ColumnProps {
     column: KanbanColumn;
@@ -17,42 +17,13 @@ const Column: FC<ColumnProps> = ({ column, setIsDraggingBoard }) => {
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [changedTitle, setChangedTitle] = useState(column.title);
     const [changegColor, setChangedColor] = useState(column.titleColor);
-    // const [currentPage, setCurrentPage] = useState(1);
-    // const [displayedTasks, setDisplayedTasks] = useState<KanbanCard[]>(kanbanCards.slice(0, 10));
-    // const [allTasksLoaded, setAllTasksLoaded] = useState(false);
 
     const [moveTask] = useUpdateKanbanCardMutation();
-    // const { data } = useOnKanbanCardAddedSubscription();
-
-    // console.log(data?.kanbanCardAdded);
-    
-
-    // useEffect(() => {
-    //     const observer = new IntersectionObserver(
-    //         async (entries) => {
-    //             if (entries[0].isIntersecting && !allTasksLoaded) {
-    //                 const newPage = currentPage + 1;
-    //                 setCurrentPage(newPage);
-    //                 const newTasks = await fetchTasksById(id, newPage, 10);
-    //                 if (newTasks.length < 10 && displayedTasks.length < 10) setAllTasksLoaded(true);
-    //                 else
-    //                     setDisplayedTasks((prev) => [...prev, ...newTasks]);
-    //             }
-    //         },
-    //         { threshold: 1.0 }
-    //     );
-
-    //     const target = document.querySelector(`#column-${id} .load-more-trigger`);
-    //     if (target) observer.observe(target);
-
-    //     return () => {
-    //         if (target) observer.unobserve(target);
-    //     };
-    // }, [currentPage, id, allTasksLoaded]);
+    const [updateColumn] = useUpdateKanbanColumnMutation();
 
     const [, drop] = useDrop({
         accept: 'CARD',
-        drop: (item: { id: number, columnId: number }, monitor) => {
+        drop: (item: { id: number, columnId: number }) => {
             if (item.columnId !== column.id) {
                 console.log('id: ', item.id, ' column: ', item.columnId, ' column2: ', column.id);
                 moveTask({
@@ -62,16 +33,10 @@ const Column: FC<ColumnProps> = ({ column, setIsDraggingBoard }) => {
                             columnId: column.id,
                         }
                     },
-                    // refetchQueries: [{
-                    //     query: GetKanbanColumnsDocument,
-                        // variables: {
-                        //     columnId: column.id,
-                        // },
-                    // }],
                 });
                 item.columnId = column.id;
             }
-        }
+        },
     });
 
     const handleOpenModal = () => {
@@ -117,8 +82,16 @@ const Column: FC<ColumnProps> = ({ column, setIsDraggingBoard }) => {
                                 flexDirection={'row'}
                                 justifyContent={'space-between'}
                             >
-                                <Typography level='title-lg'>{column.title}</Typography>
-                                <Typography level='title-lg'>{column.kanbanCards ? column.kanbanCards.length : 0}</Typography>
+                                <Typography
+                                    level='title-lg'
+                                >
+                                    {column.title}
+                                </Typography>
+                                <Typography
+                                    level='title-lg'
+                                >
+                                    {column.kanbanCards ? column.kanbanCards.length : 0}
+                                </Typography>
                             </Stack>
                             <ButtonGroup
                                 size='sm'
@@ -151,19 +124,33 @@ const Column: FC<ColumnProps> = ({ column, setIsDraggingBoard }) => {
                                 value={changedTitle}
                                 onChange={e => setChangedTitle(e.target.value)}
                                 fullWidth
+                                size='sm'
                             />
                             <Input
                                 value={changegColor}
                                 onChange={e => setChangedColor(e.target.value)}
                                 type='color'
+                                size='sm'
+                                sx={{
+                                    padding: 0,
+                                }}
                             />
-                            <ButtonGroup>
-
+                            <ButtonGroup
+                                size='sm'
+                            >
                                 <IconButton
                                     variant='soft'
                                     color='success'
                                     onClick={() => {
-                                        // updateColumn(id, changedTitle, changegColor);
+                                        updateColumn({
+                                            variables: {
+                                                updateKanbanColumnInput: {
+                                                    id: column.id,
+                                                    title: changedTitle,
+                                                    titleColor: changegColor,
+                                                },
+                                            },
+                                        });
                                         setIsEditingTitle(false);
                                     }}
                                 >
@@ -198,7 +185,7 @@ const Column: FC<ColumnProps> = ({ column, setIsDraggingBoard }) => {
                 column.kanbanCards.map((kanbanCard, index) => (
                     <Box key={`column-box-${index}`}>
                         <Task
-                            key={`task-${index}`}
+                            key={`card-${kanbanCard.id}`}
                             kanbanCard={kanbanCard}
                             setIsDraggingBoard={setIsDraggingBoard}
                         />
@@ -210,29 +197,27 @@ const Column: FC<ColumnProps> = ({ column, setIsDraggingBoard }) => {
                     height: '1px',
                 }}
             />
-            {/* <CreateTaskModal
-                id={id}
+            <CreateCardModal
+                id={column.id}
                 open={isModalOpen}
                 onClose={handleCloseModal}
             />
             <AlertModal
-                id={id}
-                title={title}
+                column={column}
                 isOpen={isAlertModalOpen}
                 onClose={() => setIsAlertModalOpen(false)}
-                handleDelete={deleteColumn}
-            /> */}
+            // handleDelete={deleteColumn}
+            />
         </Sheet>
     );
 };
 
 const AlertModal: FC<{
-    id: number;
-    title: string;
+    column: KanbanColumn,
     isOpen: boolean;
     onClose: () => void;
-    handleDelete: (id: number) => void;
-}> = ({ id, title, isOpen, onClose, handleDelete }) => {
+    // handleDelete: (id: number) => void;
+}> = ({ column, isOpen, onClose }) => {
     return (
         <Modal
             open={isOpen}
@@ -246,7 +231,7 @@ const AlertModal: FC<{
                 <Typography
                     level='title-md'
                 >
-                    Вы действительно хотите удалить <Typography variant='soft' color='warning'>{title}</Typography>?
+                    Вы действительно хотите удалить <Typography variant='soft' color='warning'>{column.title}</Typography>?
                 </Typography>
                 <Stack
                     flexDirection={'row'}
@@ -263,7 +248,7 @@ const AlertModal: FC<{
                         fullWidth
                         color='success'
                         onClick={() => {
-                            handleDelete(id);
+                            // handleDelete(id);
                             onClose();
                         }}
                     >
